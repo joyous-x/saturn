@@ -1,0 +1,34 @@
+redis:
+  host: 10.12.198.188:63791
+  passwd: passwd
+  exts:
+    maxIdle: 32
+    idleTimeout: 240s
+    connTimeout: 5s
+    maxConnLifetime: 0s
+    testOnBorrow: PING
+  dbs:
+    - 
+      key: default
+      db: 0
+mysql:
+  -
+    key: default
+    type: mysql
+    host: 10.12.198.188:33061
+    user: miniuser
+    dbname: miniprogram
+    passwd: passwd
+    debug: false
+    exts:
+      maxIdle: 10
+  -
+    key: minipro
+    type: mysqlorm
+    host: 10.12.198.188:33061
+    user: miniuser
+    dbname: miniprogram
+    passwd: passwd
+    debug: false
+    exts:
+      maxIdle: 10

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package protoc;
+
+service Calc {
+    rpc Sum(SumReq) returns(SumResp);
+}
+
+message SumReq {
+    int32 a = 1;
+    int32 b = 2;
+}
+
+message SumResp {
+    int32 s = 1;
+}

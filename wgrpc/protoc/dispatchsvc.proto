@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package protoc;
+
+service DispatchSvc {
+    rpc Dispatch(DispatchReq) returns(DispatchResp);
+}
+
+message RouteHeader {
+    string req_id = 1;
+    string uid = 2;
+    string appid = 3;
+    int32  cmd = 4;
+}
+
+message DispatchReq {
+    RouteHeader header = 1;
+    bytes pbdata       = 2;
+}
+
+message DispatchResp {
+    RouteHeader header = 1;
+    int32 cmd          = 2;
+    int32 ret_code     = 3;
+    bytes pbdata       = 4;
+}
