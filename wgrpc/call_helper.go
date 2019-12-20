@@ -2,9 +2,9 @@ package wgrpc
 
 import (
 	"context"
-	"github.com/joyous-x/enceladus/common/xlog"
-	"github.com/joyous-x/enceladus/governance/wconsul"
-	"github.com/joyous-x/enceladus/wgrpc/protoc"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/governance/wconsul"
+	"github.com/joyous-x/saturn/wgrpc/protoc"
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/jhump/protoreflect/dynamic"

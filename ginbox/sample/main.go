@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/joyous-x/enceladus/common/xlog"
-	"github.com/joyous-x/enceladus/ginbox"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/ginbox"
 	"github.com/gin-gonic/gin"
 )
 

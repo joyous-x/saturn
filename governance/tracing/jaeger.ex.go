@@ -2,7 +2,7 @@ package tracing
 
 import (
 	"context"
-	"github.com/joyous-x/enceladus/common/xlog"
+	"github.com/joyous-x/saturn/common/xlog"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/opentracing/opentracing-go/log"

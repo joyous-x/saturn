@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/joyous-x/enceladus/common/xlog"
+	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"strings"

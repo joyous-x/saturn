@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/joyous-x/enceladus/common/xlog"
-	"github.com/joyous-x/enceladus/governance/wconsul"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/governance/wconsul"
 	"fmt"
 	capi "github.com/hashicorp/consul/api"
 )

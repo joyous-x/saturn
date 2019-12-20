@@ -2,10 +2,10 @@ package main
 
 import (
 	"testing"
-	"github.com/joyous-x/enceladus/common/xlog"
-	"github.com/joyous-x/enceladus/dbs"
-	"github.com/joyous-x/enceladus/dbs/jmysql"
-	"github.com/joyous-x/enceladus/dbs/jredis"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/dbs"
+	"github.com/joyous-x/saturn/dbs/jmysql"
+	"github.com/joyous-x/saturn/dbs/jredis"
 )
 
 func TestDbs(t *testing.T) {

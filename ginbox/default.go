@@ -1,8 +1,8 @@
 package ginbox
 
 import (
-	"github.com/joyous-x/enceladus/common/xlog"
-	"github.com/joyous-x/enceladus/ginbox/middleware"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/ginbox/middleware"
 	"fmt"
 	"github.com/gin-gonic/gin"
 )

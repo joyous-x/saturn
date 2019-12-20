@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"sync/atomic"
-	"github.com/joyous-x/enceladus/common/errors"
-	"github.com/joyous-x/enceladus/common/xlog"
+	"github.com/joyous-x/saturn/common/errors"
+	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/gin-gonic/gin"
 )
 

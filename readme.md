@@ -6,7 +6,7 @@
 
 ## Usage
 ```
-    GOPATH=$GOPATH go get -v github.com/joyous-x/enceladus
+    GOPATH=$GOPATH go get -v github.com/joyous-x/saturn
 ```
 
 ## Run go test

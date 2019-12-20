@@ -1,8 +1,8 @@
 package jmysql
 
 import (
-	"github.com/joyous-x/enceladus/common/xlog"
-	"github.com/joyous-x/enceladus/dbs"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/dbs"
 	"sync"
 )
 

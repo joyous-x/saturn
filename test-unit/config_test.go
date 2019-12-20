@@ -4,8 +4,8 @@ import (
 	"testing"
 	"runtime"
     "path/filepath"
-	"github.com/joyous-x/enceladus/common/xlog"
-	"github.com/joyous-x/enceladus/config"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/config"
 )
 
 func TestConfigParser(t *testing.T) {
