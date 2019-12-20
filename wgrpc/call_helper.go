@@ -3,7 +3,7 @@ package wgrpc
 import (
 	"context"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/governance/wconsul"
+	"github.com/joyous-x/saturn/govern/wconsul"
 	"github.com/joyous-x/saturn/wgrpc/protoc"
 	"fmt"
 	"github.com/golang/protobuf/proto"

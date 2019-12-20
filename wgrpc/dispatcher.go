@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/governance/wconsul"
+	"github.com/joyous-x/saturn/govern/wconsul"
 	"github.com/joyous-x/saturn/wgrpc/protoc"
 	"fmt"
 	"google.golang.org/grpc"

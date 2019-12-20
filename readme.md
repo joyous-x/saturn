@@ -14,4 +14,4 @@
     GOPATH=$GOPATH go test -v [config_test.go]
 ```
 
-## TODO: mesh-rpc
+## TODO: rpc-mesh

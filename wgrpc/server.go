@@ -2,13 +2,13 @@ package wgrpc
 
 import (
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/governance/wconsul"
+	"github.com/joyous-x/saturn/govern/wconsul"
 	"fmt"
 	"net"
 	"runtime/debug"
 	"time"
 
-	"github.com/joyous-x/saturn/governance/tracing"
+	"github.com/joyous-x/saturn/govern/tracing"
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 	_ "github.com/grpc-ecosystem/go-grpc-middleware/recovery" // ...
 	"google.golang.org/grpc"

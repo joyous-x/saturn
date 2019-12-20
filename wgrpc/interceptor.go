@@ -3,7 +3,7 @@ package wgrpc
 import (
 	"context"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/governance/tracing"
+	"github.com/joyous-x/saturn/govern/tracing"
 	_ "github.com/grpc-ecosystem/go-grpc-middleware" // ...
 	"github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"google.golang.org/grpc"
