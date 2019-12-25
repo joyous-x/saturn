@@ -15,11 +15,12 @@ func newUUID() string {
 // Trace 拦截器
 func Trace() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		traceBegin := time.Now()
 		c.Set("ctx.client.rid", newUUID())
-		c.Set("ctx.client.rtimestamp", time.Now())
-		xlog.Info("gin: %v, %v, %v,  start", c.Request.Method, c.Request.URL.Path, c.Request.URL)
+		c.Set("ctx.client.rtimestamp", traceBegin)
+		xlog.Info("gin: %v, %v, %v  start", c.Request.Method, c.Request.URL.Path, c.Request.URL)
 		defer func() {
-			xlog.Info("gin: %v, %v, %v,  end", c.Request.Method, c.Request.URL.Path, c.Request.URL)
+			xlog.Info("gin: %v, %v, %v, spend(μs)=%v  end", c.Request.Method, c.Request.URL.Path, c.Request.URL, (time.Now().UnixNano() - traceBegin.UnixNano())/1000000)
 		}()
 		c.Next()
 	}

@@ -1,4 +1,4 @@
-package ginbox
+package gins
 
 import (
 	"fmt"
@@ -7,7 +7,15 @@ import (
 	"sync"
 )
 
-var default_ginbox = MakeGinBox(default_middlewares...)
+var default_ginbox *GinBox
+
+func init () {
+	default_ginbox = func(middleware ...gin.HandlerFunc) *GinBox {
+		return &GinBox{
+			middlewares: middleware,
+		}
+	}(default_middlewares...)
+}
 
 // Default 默认的全局GinServerBox对象
 func DefaultBox() *GinBox {
@@ -20,23 +28,22 @@ type GinBox struct {
 	servers     map[string]*GinServer
 }
 
-// MakeGinBox 快速的根据配置生成gin server
-// 初始化时, 可以制定一些中间件作为 gin sever 的通用中间件
-// 返回 GinBox 对象指针
-func MakeGinBox(middleware ...gin.HandlerFunc) *GinBox {
-	tmp := &GinBox{
-		middlewares: middleware,
-	}
-	return tmp
-}
-
 // InitDefault 初始化默认的全局GinServerBox对象
 func (this *GinBox) Init(configs []*ServerConfig, middleware ...gin.HandlerFunc) error {
+	this.servers = make(map[string]*GinServer, 0)
 	this.middlewares = append(this.middlewares, middleware...)
 	for i, v := range configs {
-		_, err := this.newServer(v, this.middlewares...)
+		if len(v.Name) == 0 {
+			v.Name = default_server_name
+		}
+		if v.Port == 0 {
+			v.Port = default_server_port
+		}
+		s, err := this.newServer(v, this.middlewares...)
 		if err != nil {
 			xlog.Panic("InitServers pos:%v, name:%v, port:%v, err:%v", i, v.Name, v.Port, err)
+		} else {
+			this.servers[v.Name] = s
 		}
 	}
 	return nil
@@ -59,9 +66,10 @@ func (this *GinBox) Server(names ...string) *GinServer {
 }
 
 // newServer 根据参数生成一个gin.Engine
-func (this *GinBox) newServer(conf *ServerConfig, middleware ...gin.HandlerFunc) (*gin.Engine, error) {
+func (this *GinBox) newServer(conf *ServerConfig, middleware ...gin.HandlerFunc) (*GinServer, error) {
 	server := NewGinServer()
-	return server.Init(conf, middleware...)
+	_, err := server.Init(conf, middleware...)
+	return server, err
 }
 
 // Handle 根据参数处理server的route相关
@@ -80,14 +88,15 @@ func (this *GinBox) Handle(name, method, relativePath string, handlers ...gin.Ha
 // 此函数会阻塞，直到各个server退出
 func (this *GinBox) Run() error {
 	if this.servers == nil || len(this.servers) < 1 {
+		xlog.Error("GinBox Run error: invalid servers")
 		return fmt.Errorf("no servers")
 	}
 
 	var waitGroup sync.WaitGroup
 	for _, s := range this.servers {
+		waitGroup.Add(1)
 		go func() {
 			defer waitGroup.Done()
-			waitGroup.Add(1)
 			s.Run()
 		}()
 	}

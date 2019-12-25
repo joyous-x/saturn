@@ -1,4 +1,4 @@
-package ginbox
+package gins
 
 import (
 	"context"
@@ -31,7 +31,7 @@ func NewGinServer(middleware ...gin.HandlerFunc) *GinServer {
 }
 
 // Server 获取指定配置相关联的gin.Engine
-func (this *GinServer) Server() *gin.Engine {
+func (this *GinServer) Engine() *gin.Engine {
 	return this.engine
 }
 
