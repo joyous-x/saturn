@@ -57,7 +57,7 @@ func clientFuncInsecure() {
 func serverFunc() {
 	svcInfo := &wgrpc.ServerInfo{
 		ConnTimeoutSec: 5,
-		ID:             "wgrpc_entry_main",
+		UniqID:         "wgrpc_entry_main",
 		Name:           "wgrpc_entry_main",
 	}
 	server, err := wgrpc.NewWServer(svcInfo, "", "")

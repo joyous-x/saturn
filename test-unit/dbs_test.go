@@ -32,6 +32,7 @@ func TestDbs(t *testing.T) {
 			ConnTimeout: "5s",
 		},
 	}
+
 	xlog.Debug("-------test start ")
 	conn := jredis.GlobalInst(redisConf).Conn("default")
 	xlog.Debug("-------test : redisconn=%v ", conn)

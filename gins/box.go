@@ -14,7 +14,7 @@ func init () {
 		return &GinBox{
 			middlewares: middleware,
 		}
-	}(default_middlewares...)
+	}(DefaultMiddlewares...)
 }
 
 // Default 默认的全局GinServerBox对象
@@ -68,12 +68,11 @@ func (this *GinBox) Server(names ...string) *GinServer {
 // newServer 根据参数生成一个gin.Engine
 func (this *GinBox) newServer(conf *ServerConfig, middleware ...gin.HandlerFunc) (*GinServer, error) {
 	server := NewGinServer()
-	_, err := server.Init(conf, middleware...)
-	return server, err
+	return server, server.Init(conf, middleware...)
 }
 
 // Handle 根据参数处理server的route相关
-func (this *GinBox) Handle(name, method, relativePath string, handlers ...gin.HandlerFunc) gin.IRoutes {
+func (this *GinBox) Handle(name, method, relativePath string, handlers ...gin.HandlerFunc) error {
 	if len(name) == 0 {
 		name = default_server_name
 	}

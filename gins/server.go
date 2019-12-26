@@ -36,7 +36,7 @@ func (this *GinServer) Engine() *gin.Engine {
 }
 
 // InitServer 根据参数生成一个gin.Engine
-func (this *GinServer) Init(conf *ServerConfig, middleware ...gin.HandlerFunc) (*gin.Engine, error) {
+func (this *GinServer) Init(conf *ServerConfig, middleware ...gin.HandlerFunc) error {
 	name, port, certFile, keyFile, debug := conf.Name, conf.Port, conf.CertFile, conf.KeyFile, conf.Debug
 
 	gin.DisableConsoleColor()
@@ -62,15 +62,43 @@ func (this *GinServer) Init(conf *ServerConfig, middleware ...gin.HandlerFunc) (
 	this.KeyFile = keyFile
 	this.middlewares = append(this.middlewares, middleware...)
 
-	return this.engine, nil
+	return nil
 }
 
 // Handle 根据参数处理server的route相关
-func (this *GinServer) Handle(method, relativePath string, handlers ...gin.HandlerFunc) gin.IRoutes {
-	if this.engine == nil {
-		return nil
+func (this *GinServer) Handle(method, relativePath string, handlers ...gin.HandlerFunc) error {
+	var err error
+	if this.engine != nil {
+		iRoutes := this.engine.Handle(method, relativePath, handlers ...)
+		if iRoutes != nil {
+			return nil 
+		} else {
+			err = fmt.Errorf("route handler error(%v, %v)", method, relativePath)
+		}
+	} else {
+		err = fmt.Errorf("server not ready: (%v, %v)", method, relativePath)
 	}
-	return this.engine.Handle(method, relativePath, handlers...)
+	return err
+}
+
+// Handle 根据参数处理server的route相关
+func (this *GinServer) Route(method, relativePath string, routes ...interface{}) error {
+	var err error
+	if this.engine != nil {
+		handlers := make([]gin.HandlerFunc, len(routes))
+		for i, r := range routes {
+			handlers[i] = r.(gin.HandlerFunc)
+		}
+		iRoutes := this.engine.Handle(method, relativePath, handlers ...)
+		if iRoutes != nil {
+			return nil 
+		} else {
+			err = fmt.Errorf("route handler error(%v, %v)", method, relativePath)
+		}
+	} else {
+		err = fmt.Errorf("server not ready: (%v, %v)", method, relativePath)
+	}
+	return err
 }
 
 // Run 启动并运行server
@@ -110,7 +138,7 @@ func (this *GinServer) runServer() error {
 		if len(certFile) > 0 && len(keyFile) > 0 {
 			xlog.Debug("GinServer: ready to ListenAndServeTLS: %s(%s) certFile=%v keyFile=%v", name, addr, certFile, keyFile)
 			if err := httpSvr.ListenAndServeTLS(certFile, keyFile); err != http.ErrServerClosed {
-				xlog.Warn("GinServer:%s(%s) ListenAndServeTLS: %v", err)
+				xlog.Warn("GinServer:%s(%s) ListenAndServeTLS: %v", name, addr, err)
 			}
 		} else {
 			xlog.Debug("GinServer ready to ListenAndServe: %s(%s) certFile=%v keyFile=%v", name, addr, certFile, keyFile)

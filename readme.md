@@ -9,6 +9,7 @@ saturn is a goland universal framework for rapid development of high performance
 
 # Features
 - TODO
+    + 基于http的简单rpc调用
 
 # Quick Start
 
@@ -19,6 +20,12 @@ saturn is a goland universal framework for rapid development of high performance
 The quick start gives very basic example of running client and server on the same machine. 
 
 For the detailed information about using and developing **saturn**, please jump to [Documents](#Documents). the demo case is in the samples/ directory
+
+
+## Test
+```
+    go test -cover ./...
+```
 
 # Documents
 - [Wiki](https://github.com/joyous-x/saturn/wiki) (TODO)

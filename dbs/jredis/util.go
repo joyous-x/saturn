@@ -15,14 +15,14 @@ func newPool(host, passwd string, db, maxIdle, maxActive int, idleTimeout, maxCo
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", host, redis.DialDatabase(db), redis.DialConnectTimeout(connTimeout))
 			if err != nil {
-				xlog.Error("dial redis, host=%v:%v error", host, db, err)
+				xlog.Error("dial redis, host=%v:%v error=%v", host, db, err)
 				return nil, err
 			}
 
 			if len(passwd) > 0 {
 				if _, err := c.Do("AUTH", passwd); err != nil {
 					c.Close()
-					xlog.Error("auth redis, host=%v:%v error", host, db, err)
+					xlog.Error("auth redis, host=%v:%v error=%v", host, db, err)
 					return nil, err
 				}
 			}
