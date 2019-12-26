@@ -1,10 +1,10 @@
 package main
 
 import (
-	"testing"
-	"runtime"
-    "path/filepath"
 	"github.com/joyous-x/saturn/common/xlog"
+	"path/filepath"
+	"runtime"
+	"testing"
 )
 
 func TestConfigParser(t *testing.T) {

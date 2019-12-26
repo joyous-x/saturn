@@ -3,14 +3,14 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/joyous-x/saturn/common/xlog"
 	"io"
-	"net"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
-	"github.com/joyous-x/saturn/common/xlog"
 )
 
 func HttpPostWwwForm(urls string, data map[string]string) ([]byte, error) {

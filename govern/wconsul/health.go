@@ -1,9 +1,9 @@
 package wconsul
 
 import (
-	"github.com/joyous-x/saturn/common/xlog"
 	"fmt"
 	capi "github.com/hashicorp/consul/api"
+	"github.com/joyous-x/saturn/common/xlog"
 	"math/rand"
 	"time"
 )

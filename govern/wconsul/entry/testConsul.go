@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/govern/wconsul"
 	"fmt"
 	capi "github.com/hashicorp/consul/api"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/govern/wconsul"
 )
 
 const (

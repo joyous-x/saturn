@@ -1,7 +1,7 @@
 package errors
 
 // error code format:
-//       code = [appid(2)][module(3)][code(3)] 
+//       code = [appid(2)][module(3)][code(3)]
 //
 // global errors:
 var (

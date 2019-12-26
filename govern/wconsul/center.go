@@ -1,8 +1,8 @@
 package wconsul
 
 import (
-	"github.com/joyous-x/saturn/common/xlog"
 	capi "github.com/hashicorp/consul/api"
+	"github.com/joyous-x/saturn/common/xlog"
 	"net/http"
 	"sync"
 	"time"

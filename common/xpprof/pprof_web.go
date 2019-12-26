@@ -1,12 +1,12 @@
 package xpprof
 
 import (
-	"github.com/joyous-x/saturn/common/xlog"
 	"context"
 	"fmt"
+	"github.com/joyous-x/saturn/common/xlog"
 	"net"
-	"net/http/pprof"
 	"net/http"
+	"net/http/pprof"
 )
 
 // reference

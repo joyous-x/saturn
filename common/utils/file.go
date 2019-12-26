@@ -2,8 +2,8 @@ package utils
 
 import (
 	"crypto/md5"
-	"github.com/joyous-x/saturn/common/xlog"
 	"fmt"
+	"github.com/joyous-x/saturn/common/xlog"
 	"io"
 	"os"
 	"path/filepath"

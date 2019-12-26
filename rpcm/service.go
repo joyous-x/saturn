@@ -3,10 +3,11 @@ package rpcm
 import (
 	"github.com/joyous-x/saturn/gins"
 	"github.com/joyous-x/saturn/rpcm/base"
+	"strings"
 )
 
 func NewService(conf *base.ServiceConfig) (base.IMServer, error) {
-	switch conf.Protocal {
+	switch strings.ToLower(conf.Protocal) {
 	case "http":
 		return newGinServer(conf)
 	case "websocket":

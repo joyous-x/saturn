@@ -9,7 +9,7 @@ import (
 
 var default_ginbox *GinBox
 
-func init () {
+func init() {
 	default_ginbox = func(middleware ...gin.HandlerFunc) *GinBox {
 		return &GinBox{
 			middlewares: middleware,

@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"sync/atomic"
+	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/gin-gonic/gin"
+	"sync/atomic"
 )
 
 type RateLimitConcurrency struct {
@@ -22,7 +22,7 @@ type RateLimitConcurrency struct {
 func RateLimitOnConcurrency(maxConcurrency int64, logOnly bool) gin.HandlerFunc {
 	rateLimiter := &RateLimitConcurrency{
 		maxConcurrency: maxConcurrency,
-		current: 0,
+		current:        0,
 	}
 	return func(c *gin.Context) {
 		atomic.AddInt64(&rateLimiter.current, 1)

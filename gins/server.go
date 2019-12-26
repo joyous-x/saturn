@@ -69,9 +69,9 @@ func (this *GinServer) Init(conf *ServerConfig, middleware ...gin.HandlerFunc) e
 func (this *GinServer) Handle(method, relativePath string, handlers ...gin.HandlerFunc) error {
 	var err error
 	if this.engine != nil {
-		iRoutes := this.engine.Handle(method, relativePath, handlers ...)
+		iRoutes := this.engine.Handle(method, relativePath, handlers...)
 		if iRoutes != nil {
-			return nil 
+			return nil
 		} else {
 			err = fmt.Errorf("route handler error(%v, %v)", method, relativePath)
 		}
@@ -87,11 +87,17 @@ func (this *GinServer) Route(method, relativePath string, routes ...interface{})
 	if this.engine != nil {
 		handlers := make([]gin.HandlerFunc, len(routes))
 		for i, r := range routes {
-			handlers[i] = r.(gin.HandlerFunc)
+			if f, ok := r.(gin.HandlerFunc); ok {
+				handlers[i] = f
+			} else if f, ok := r.(func(*gin.Context)); ok {
+				handlers[i] = gin.HandlerFunc(f)
+			} else {
+				xlog.Panic("route handler error(invalid handler) %v %v", method, relativePath)
+			}
 		}
-		iRoutes := this.engine.Handle(method, relativePath, handlers ...)
+		iRoutes := this.engine.Handle(method, relativePath, handlers...)
 		if iRoutes != nil {
-			return nil 
+			return nil
 		} else {
 			err = fmt.Errorf("route handler error(%v, %v)", method, relativePath)
 		}
@@ -147,6 +153,7 @@ func (this *GinServer) runServer() error {
 				xlog.Warn("GinServer:%s(%s) ListenAndServe: %v", name, addr, err)
 			}
 		}
+		xlog.Debug("GinServer:%s(%s) ListenAndServe stopped", name, addr)
 		this.signStop <- 1
 	}()
 

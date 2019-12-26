@@ -1,16 +1,16 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/gins"
-	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func version(c *gin.Context) {
 	datas := map[string]string{
-		"data": "hello world",
-		"path": c.Request.URL.Path,
+		"data":   "hello world",
+		"path":   c.Request.URL.Path,
 		"method": c.Request.Method,
 	}
 	if "GET" == c.Request.Method {
@@ -22,7 +22,6 @@ func version(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, datas)
 }
-
 
 func HttpRouter(ginbox *gins.GinBox) error {
 	ginbox.Handle("default", "POST", "/v1", version)

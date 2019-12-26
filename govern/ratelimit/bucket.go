@@ -1,26 +1,26 @@
 package ratelimit
 
 import (
-	"time"
 	"fmt"
+	"time"
 )
 
 // 限流策略：
 //     令牌桶模式
 //     当令牌桶的 capacity 为 1 时，退化为 滴漏模式
 type RateLimitOnBucket struct {
-	capacity    int 
-	rate        int
-	bucket      chan struct{}
-	ticker      *time.Ticker
+	capacity int
+	rate     int
+	bucket   chan struct{}
+	ticker   *time.Ticker
 }
 
 func NewRateLimitOnBucket(capacity, rate int) *RateLimitOnBucket {
 	tmp := &RateLimitOnBucket{
 		capacity: capacity,
-		rate  : rate,
-		bucket: make(chan struct{}, capacity),
-		ticker: nil,
+		rate:     rate,
+		bucket:   make(chan struct{}, capacity),
+		ticker:   nil,
 	}
 	return tmp
 }
@@ -28,7 +28,7 @@ func NewRateLimitOnBucket(capacity, rate int) *RateLimitOnBucket {
 func (this *RateLimitOnBucket) IsAllow() bool {
 	ret := false
 	select {
-	case <- this.bucket:
+	case <-this.bucket:
 		ret = true
 	default:
 	}
@@ -48,7 +48,7 @@ func (this *RateLimitOnBucket) Run() error {
 		defer this.Stop()
 		for {
 			select {
-			case <- this.ticker.C:
+			case <-this.ticker.C:
 				select {
 				case this.bucket <- struct{}{}:
 					// xlog.Debugf("--- current bucket status: %v %v \n", len(this.bucket), cap(this.bucket))
@@ -64,6 +64,6 @@ func (this *RateLimitOnBucket) Stop() error {
 	if this.ticker != nil {
 		this.ticker.Stop()
 		this.ticker = nil
-	}	
+	}
 	return nil
 }

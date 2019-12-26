@@ -1,8 +1,8 @@
 package jredis
 
 import (
-	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/gomodule/redigo/redis"
+	"github.com/joyous-x/saturn/common/xlog"
 	"time"
 )
 

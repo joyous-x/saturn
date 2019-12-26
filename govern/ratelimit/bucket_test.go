@@ -15,9 +15,9 @@ func Test_Bucket(t *testing.T) {
 	allowCnt := 0
 	expected := 7
 
-	for i:=0; i < totalCnt; i++ {
+	for i := 0; i < totalCnt; i++ {
 		select {
-		case <- ticker.C:
+		case <-ticker.C:
 			allow := limiter.IsAllow()
 			if allow {
 				allowCnt += 1
@@ -25,7 +25,7 @@ func Test_Bucket(t *testing.T) {
 			t.Logf("---- %v \n", allow)
 		}
 	}
-	
+
 	if expected != allowCnt {
 		t.Errorf("Test_Bucket allow = %v expected = %d", allowCnt, expected)
 	}

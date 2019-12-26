@@ -1,9 +1,9 @@
 package jredis
 
 import (
-	"github.com/joyous-x/saturn/dbs"
 	"fmt"
 	"github.com/gomodule/redigo/redis"
+	"github.com/joyous-x/saturn/dbs"
 	"time"
 )
 

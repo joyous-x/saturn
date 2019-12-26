@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/gin-gonic/gin"
+	"github.com/joyous-x/saturn/common/xlog"
 	"runtime/debug"
 )
 
