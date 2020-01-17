@@ -8,8 +8,9 @@
 saturn is a goland universal framework for rapid development of high performance mesh services.
 
 # Features
-- TODO
-    + 基于http的简单rpc调用
++ 基于http的简单rpc调用
++ 服务注册中心
+    - TODO
 
 # Quick Start
 
