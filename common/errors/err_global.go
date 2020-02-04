@@ -3,6 +3,9 @@ package errors
 // error code format:
 //       code = [appid(2)][module(3)][code(3)]
 //
+// alread:
+//       component/user: 10-001-xxx
+//
 // global errors:
 var (
 	OK                  = NewError(0, "ok")
