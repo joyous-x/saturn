@@ -14,8 +14,3 @@ func GetUserInfo(appname, uuid string) (token string, err error) {
 func UserLogin(c *gin.Context) {
 
 }
-
-
-func MiniappWxLogin(c *gin.Context) {
-	
-}

@@ -1,19 +1,14 @@
 package wechat
 
 import (
-	"ceggs/common"
-	"ceggs/config"
-	"ceggs/model"
-	"ceggs/wechat"
-	wxminiapp "ceggs/wechat/miniapp"
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	guuid "github.com/google/uuid"
-	comerrors "github.com/joyous-x/enceladus/common/errors"
-	comutils "github.com/joyous-x/enceladus/common/utils"
-	"github.com/joyous-x/enceladus/common/xlog"
-	"github.com/joyous-x/enceladus/dbs/jredis"
+	comerrors "github.com/joyous-x/saturn/common/errors"
+	comutils "github.com/joyous-x/saturn/common/utils"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/dbs/jredis"
 	"hash/crc64"
 	"strconv"
 	"strings"

@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	"fmt"	
+	"fmt"
 	"github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/component/user/errors"
@@ -103,4 +103,3 @@ func updateByWxMiniApp(ctx context.Context, wxConfig *wechat.WxConfig, reqData *
 
 	return err
 }
-

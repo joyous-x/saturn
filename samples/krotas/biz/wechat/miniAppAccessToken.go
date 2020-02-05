@@ -4,10 +4,12 @@ package wechat
 import(
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/dbs/jredis"
 	"github.com/joyous-x/saturn/component/wechat"
 	"krotas/common"
 	"krotas/config"
+	"krotas/biz"
 )
 
 
@@ -20,11 +22,10 @@ type wxAccessTokenResp struct {
 	Token string `json:"access_token"`
 }
 
-
 // MiniappWxAccessToken get a valid access_token for a wechat miniprogram
 func MiniappWxAccessToken(c *gin.Context) {
 	reqData := wxAccessTokenReq{}
-	_, appname, _, err := common.RequestUnmarshal(c, GetUserInfo, &reqData)
+	_, appname, _, err := common.RequestUnmarshal(c, biz.GetUserInfo, &reqData)
 	if err != nil {
 		common.ResponseMarshal(c, -1, err.Error(), nil)
 		return
@@ -44,6 +45,6 @@ func MiniappWxAccessToken(c *gin.Context) {
 		Appid: wxcfg.AppID,
 		Token: token,
 	}
-	common.ResponseMarshal(c, comerrors.OK.Code, comerrors.OK.Msg, respData)
+	common.ResponseMarshal(c, errors.OK.Code, errors.OK.Msg, respData)
 	return
 }
