@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/dbs/jmysql"
-	"sync"
 	"time"
 )
 
@@ -42,7 +40,7 @@ type UserDao struct {
 }
 
 func (w *UserDao) tableName(appname string) string {
-	return tnUserInfo(appname)
+	return fmt.Sprintf("t_%v_user_info", appname)
 }
 
 // GetUserInfoByUUID 获取用户信息
