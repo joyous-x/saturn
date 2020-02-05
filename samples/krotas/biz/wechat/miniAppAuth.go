@@ -9,6 +9,7 @@ import (
 	comutils "github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/component/wechat/miniapp"
+	
 	"hash/crc64"
 	"strconv"
 	"strings"
@@ -77,7 +78,7 @@ func wxMiniAppLogin(ctx context.Context, appname, jsCode, inviter string) (uuid,
 		xlog.Debug("wxMiniAppLogin appid=%v jscode=%v succ: openid=%v sessionkey=%v", appid, jsCode, openID, sessionKey)
 	}
 
-	wxUser, err := model.WxUserDaoInst().GetUserInfoByOpenID(ctx, appname, openID)
+	wxUser, err := model.UserDaoInst().GetUserInfoByOpenID(ctx, appname, openID)
 	if err != nil {
 		xlog.Error("wxMiniAppLogin GetUserInfoByOpenID appid=%v openID=%v err=%v", appid, openID, err)
 		return
@@ -93,10 +94,10 @@ func wxMiniAppLogin(ctx context.Context, appname, jsCode, inviter string) (uuid,
 		return fmt.Sprintf("%x", hash64)
 	}
 
-	if wxUser.UUID == "" {
+	if wxUser.Uuid == "" {
 		uuid = newUUID(appname, openID)
 	} else {
-		uuid = wxUser.UUID
+		uuid = wxUser.Uuid
 		if wxUser.Status != 0 {
 			err = comerrors.ErrAuthForbiden.Err()
 			return
@@ -110,7 +111,7 @@ func wxMiniAppLogin(ctx context.Context, appname, jsCode, inviter string) (uuid,
 		return
 	}
 
-	err = model.WxUserDaoInst().UpdateUserBaseInfo(ctx, appname, uuid, openID, sessionKey, 0, inviter)
+	err = model.UserDaoInst().UpdateUserBaseInfo(ctx, appname, uuid, openID, sessionKey, 0, inviter)
 	if err != nil {
 		xlog.Error("wxMiniAppLogin UpdateUserBaseInfo appid=%v openid=%v err=%v", appid, openID, err)
 		return
@@ -134,7 +135,7 @@ func WxUpdateUserInfo(c *gin.Context) {
 		return
 	}
 
-	wxUserInfo, err := model.WxUserDaoInst().GetUserInfoByUUID(ctx, appname, uuid)
+	wxUserInfo, err := model.UserDaoInst().GetUserInfoByUUID(ctx, appname, uuid)
 	if err != nil {
 		xlog.Error("WxUpdateUserInfo GetUserInfoByUUID (%s %s) fail: %v", appname, uuid, err)
 		common.ResponseMarshal(c, -2, err.Error(), nil)
@@ -146,7 +147,7 @@ func WxUpdateUserInfo(c *gin.Context) {
 		common.ResponseMarshal(c, -3, err.Error(), nil)
 	}
 
-	err = model.WxUserDaoInst().UpdateUserExtInfo(ctx, appname, uuid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
+	err = model.UserDaoInst().UpdateUserExtInfo(ctx, appname, uuid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
 	if err != nil {
 		xlog.Error("WxUpdateUserInfo UpdateUserExtInfo (%s) fail: %v", uuid, err)
 		common.ResponseMarshal(c, -4, err.Error(), nil)
