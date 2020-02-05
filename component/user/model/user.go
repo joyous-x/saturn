@@ -43,6 +43,10 @@ func (w *UserDao) tableName(appname string) string {
 	return fmt.Sprintf("t_%v_user_info", appname)
 }
 
+func (w *UserDao) SetDbOrm(dbOrm *gorm.DB) {
+	w.dbOrm = dbOrm
+}
+
 // GetUserInfoByUUID 获取用户信息
 func (w *UserDao) GetUserInfoByUUID(ctx context.Context, appname, uuid string) (*UserInfo, error) {
 	data := &UserInfo{}
