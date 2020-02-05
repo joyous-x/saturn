@@ -8,11 +8,16 @@ import (
 	comerrors "github.com/joyous-x/saturn/common/errors"
 	comutils "github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/dbs/jredis"
+	"github.com/joyous-x/saturn/component/wechat/miniapp"
 	"hash/crc64"
 	"strconv"
 	"strings"
 	"time"
+
+	"krotas/biz"
+	"krotas/common"
+	"krotas/config"
+	"krotas/model"
 )
 
 type userInfoUpdateReqData struct {
@@ -31,13 +36,12 @@ type loginResponseData struct {
 	IsNewUser bool   `json:"is_new_user"`
 }
 
-
 // MiniappWxLogin login a wechat miniprogram
 func MiniappWxLogin(c *gin.Context) {
 	request := loginRequestData{}
 	response := loginResponseData{}
 
-	ctx, appname, _, err := common.RequestUnmarshalNoAuth(c, GetUserInfo, &request)
+	ctx, appname, _, err := common.RequestUnmarshalNoAuth(c, biz.GetUserInfo, &request)
 	if err != nil {
 		common.ResponseMarshal(c, -1, err.Error(), response)
 		return
@@ -65,7 +69,7 @@ func wxMiniAppLogin(ctx context.Context, appname, jsCode, inviter string) (uuid,
 	appid := appInfo.AppID
 	appsecret := appInfo.AppSecret
 
-	openID, sessionKey, err := wxminiapp.WxMiniAppLogin(appid, appsecret, jsCode)
+	openID, sessionKey, err := miniapp.WxMiniAppAuth(appid, appsecret, jsCode)
 	if err != nil {
 		xlog.Error("wxMiniAppLogin appid=%v jscode=%v err=%v", appid, jsCode, err)
 		return
@@ -118,7 +122,7 @@ func wxMiniAppLogin(ctx context.Context, appname, jsCode, inviter string) (uuid,
 // WxUpdateUserInfo 更新用户信息
 func WxUpdateUserInfo(c *gin.Context) {
 	reqData := userInfoUpdateReqData{}
-	ctx, appname, uuid, err := common.RequestUnmarshal(c, GetUserInfo, &reqData)
+	ctx, appname, uuid, err := common.RequestUnmarshal(c, biz.GetUserInfo, &reqData)
 	if err != nil {
 		common.ResponseMarshal(c, -1, err.Error(), nil)
 		return
@@ -136,7 +140,7 @@ func WxUpdateUserInfo(c *gin.Context) {
 		common.ResponseMarshal(c, -2, err.Error(), nil)
 	}
 
-	infos, err := wxminiapp.DecryptWxUserInfo(reqData.EncryptedData, reqData.Iv, wxUserInfo.SessionKey)
+	infos, err := miniapp.DecryptWxUserInfo(reqData.EncryptedData, reqData.Iv, wxUserInfo.SessionKey)
 	if err != nil {
 		xlog.Error("WxUpdateUserInfo DecryptWxUserInfo (%s %s) encrypted_data=%v fail: %v", appname, uuid, reqData.EncryptedData, err)
 		common.ResponseMarshal(c, -3, err.Error(), nil)

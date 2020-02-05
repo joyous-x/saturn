@@ -1,17 +1,15 @@
 package wechat
 
-
-import(
+import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/errors"
-	"github.com/joyous-x/saturn/dbs/jredis"
 	"github.com/joyous-x/saturn/component/wechat"
+	"github.com/joyous-x/saturn/dbs/jredis"
+	"krotas/biz"
 	"krotas/common"
 	"krotas/config"
-	"krotas/biz"
 )
-
 
 type wxAccessTokenReq struct {
 	Appid string `json:"appid"`

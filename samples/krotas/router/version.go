@@ -1,8 +1,8 @@
 package router
 
-import(
-	"net/http"
+import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func version(c *gin.Context) {
