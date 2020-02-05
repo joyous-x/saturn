@@ -1,41 +1,39 @@
 package model
 
-
 import (
 	"context"
 	"database/sql"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"github.com/joyous-x/enceladus/common/xlog"
-	"github.com/joyous-x/enceladus/dbs/jmysql"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/dbs/jmysql"
 	"sync"
 	"time"
 )
 
 type UserInfo struct {
-	ID          int64     `json:"id"`
-	Uuid        string    `json:"uuid"`
-	Mobile      string    `json:"mobile"`
-	InviterID   string    `json:"inviter"`
+	ID        int64  `json:"id"`
+	Uuid      string `json:"uuid"`
+	Mobile    string `json:"mobile"`
+	InviterID string `json:"inviter"`
 
-	NickName    string    `json:"nickname"`
-	AvatarURL   string    `json:"avatar_url"`
-	Gender      int       `json:"gender"`
-	Language    string    `json:"language"`
-	City        string    `json:"city"`
-	Province    string    `json:"province"`
-	Country     string    `json:"country"`
-	Status      int       `json:"status"`
-	IsNewUser   int    `json:"is_new_user"`
-	
-	OpenID      string    `json:"openid"`
-	UnionID     string    `json:"unionid"`
-	SessionKey  string    `json:"session_key"`
+	NickName  string `json:"nickname"`
+	AvatarURL string `json:"avatar_url"`
+	Gender    int    `json:"gender"`
+	Language  string `json:"language"`
+	City      string `json:"city"`
+	Province  string `json:"province"`
+	Country   string `json:"country"`
+	Status    int    `json:"status"`
+	IsNewUser int    `json:"is_new_user"`
+
+	OpenID     string `json:"openid"`
+	UnionID    string `json:"unionid"`
+	SessionKey string `json:"session_key"`
 
 	CreatedTime time.Time `json:"create_time"`
 	UpdatedTime time.Time `json:"last_login_time"`
 }
-
 
 // UserDao ...
 type UserDao struct {
@@ -43,28 +41,9 @@ type UserDao struct {
 	dbOrm *gorm.DB
 }
 
-var gUserdaoOnce sync.Once
-var gUserDaoInst *UserDao
-
-// UserDaoInst ...
-func UserDaoInst() *UserDao {
-	gUserdaoOnce.Do(func() {
-		dbOrm, err := jmysql.GlobalInst().DBOrm(mysqlKeyMinipro)
-		if err != nil {
-			panic("init database fail")
-		}
-		gUserDaoInst = &UserDao{
-			dbOrm: dbOrm,
-		}
-	})
-	return gUserDaoInst
-}
-
 func (w *UserDao) tableName(appname string) string {
 	return tnUserInfo(appname)
 }
-
-func (w *UserDao) GetUserInfoByUUID(
 
 // GetUserInfoByUUID 获取用户信息
 func (w *UserDao) GetUserInfoByUUID(ctx context.Context, appname, uuid string) (*UserInfo, error) {
