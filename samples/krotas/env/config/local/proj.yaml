@@ -1,0 +1,16 @@
+httpserver:
+  - 
+    key: default
+    port: 8000
+  - 
+    key: inner
+    port: 8001
+
+wxminiapp:
+  miniapp:
+    app_id: ""
+    app_secret: ""
+  pubacc:
+    app_id: ""
+    app_secret: ""
+    token: ""

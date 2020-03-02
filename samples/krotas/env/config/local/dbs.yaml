@@ -1,0 +1,34 @@
+redis:
+  host: redis:6379
+  passwd: 123.456
+  exts:
+    maxIdle: 32
+    idleTimeout: 240s
+    connTimeout: 5s
+    maxConnLifetime: 0s
+    testOnBorrow: PING
+  dbs:
+    - 
+      key: default
+      db: 0
+mysql:
+  -
+    key: default
+    type: mysql
+    host: mysql:3306
+    user: joyousx
+    dbname: apps
+    passwd: 123.456
+    debug: false
+    exts:
+      maxIdle: 10
+  -
+    key: minipro
+    type: mysqlorm
+    host: mysql:3306
+    user: joyousx
+    dbname: apps
+    passwd: 123.456
+    debug: false
+    exts:
+      maxIdle: 10
