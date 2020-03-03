@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/common/utils"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -100,7 +101,7 @@ func requestUnmarshal(c *gin.Context, fnUserInfo FnAuthUserInfo, data interface{
 
 	//signature
 	signSha1, signDevice := parseAuthorization(c.GetHeader("Authorization"))
-	signDeviceServer := DeviceFingerprint(string(requestRawPacket))
+	signDeviceServer := utils.Fingerprint(string(requestRawPacket))
 
 	xlog.Info("signature app:%s, uuid:%s, client:%s, server:%s, body:%s", appName, uuid, signDevice, signDeviceServer, string(requestRawPacket))
 
