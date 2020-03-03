@@ -3,7 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
-	"github.com/joyous-x/saturn/dbs/jredis"
+	"github.com/joyous-x/saturn/dbs"
 )
 
 const wxTokenExpire = 3600 * 24 * 7
@@ -15,7 +15,7 @@ var wxTokenKey = func(appname, uuid string) string {
 
 // GetWxToken 取回 Token
 func GetWxToken(appname, uuid string) (string, error) {
-	conn := jredis.GlobalInst().Conn(comconRedisName)
+	conn := dbs.RedisInst().Conn(comconRedisName)
 	defer conn.Close()
 	key := wxTokenKey(appname, uuid)
 
@@ -28,7 +28,7 @@ func GetWxToken(appname, uuid string) (string, error) {
 
 // PutWxToken 存储 token
 func PutWxToken(appname, uuid, token string) error {
-	conn := jredis.GlobalInst().Conn(comconRedisName)
+	conn := dbs.RedisInst().Conn(comconRedisName)
 	defer conn.Close()
 	key := wxTokenKey(appname, uuid)
 	_, err := conn.Do("SETEX", key, wxTokenExpire, token)

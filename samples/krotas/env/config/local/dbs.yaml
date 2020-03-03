@@ -1,5 +1,5 @@
 redis:
-  host: redis:6379
+  host: 127.0.0.1:6379
   passwd: 123.456
   exts:
     maxIdle: 32
@@ -15,7 +15,7 @@ mysql:
   -
     key: default
     type: mysql
-    host: mysql:3306
+    host: 127.0.0.1:3306
     user: joyousx
     dbname: apps
     passwd: 123.456
@@ -25,7 +25,7 @@ mysql:
   -
     key: minipro
     type: mysqlorm
-    host: mysql:3306
+    host: 127.0.0.1:3306
     user: joyousx
     dbname: apps
     passwd: 123.456

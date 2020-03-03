@@ -13,7 +13,7 @@ const (
 )
 
 type ConfProj struct {
-	HttpConfs []gins.ServerConfig      `yaml:"httpserver"`
+	HttpConfs []*gins.ServerConfig      `yaml:"httpserver"`
 	WxApps    map[string]WxMiniAppInfo `yaml:"wxminiapp"`
 }
 

@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/component/wechat"
-	"github.com/joyous-x/saturn/dbs/jredis"
+	"github.com/joyous-x/saturn/dbs"
 	"krotas/biz"
 	"krotas/common"
 	"krotas/config"
@@ -34,7 +34,7 @@ func MiniappWxAccessToken(c *gin.Context) {
 		common.ResponseMarshal(c, -1, err.Error(), nil)
 		return
 	}
-	token, err := wechat.GetAccessTokenWithCache(jredis.GlobalInst().Conn("default"), wxcfg.AppID, wxcfg.AppSecret)
+	token, err := wechat.GetAccessTokenWithCache(dbs.RedisInst().Conn("default"), wxcfg.AppID, wxcfg.AppSecret)
 	if err != nil {
 		common.ResponseMarshal(c, -1, err.Error(), nil)
 		return

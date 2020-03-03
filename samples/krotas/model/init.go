@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/dbs/jmysql"
-	"github.com/joyous-x/saturn/dbs/jredis"
+	"github.com/joyous-x/saturn/dbs"
 	"os"
 
 	"krotas/config"
@@ -18,14 +17,14 @@ const (
 )
 
 func InitModels() error {
-	if nil == jredis.GlobalInst(config.GlobalInst().CfgDbs().Redis) {
+	if nil == dbs.RedisInst(config.GlobalInst().CfgDbs().Redis) {
 		return fmt.Errorf("invalid redis instance")
 	}
-	if nil == jmysql.GlobalInst(config.GlobalInst().CfgDbs().Mysql...) {
+	if nil == dbs.MysqlInst(config.GlobalInst().CfgDbs().Mysql...) {
 		return fmt.Errorf("invalid mysql instance")
 	}
 
-	if db, err := jmysql.GlobalInst().DB(mysqlKeyDefault); err != nil {
+	if db, err := dbs.MysqlInst().DB(mysqlKeyDefault); err != nil {
 		xlog.Error("mysql db:%s error: %v", mysqlKeyDefault, err)
 	} else if err := db.Ping(); err != nil {
 		xlog.Error("mysql db:%s error: %v", mysqlKeyDefault, err)
@@ -33,7 +32,7 @@ func InitModels() error {
 		xlog.Debug("mysql db:%s ping ok", mysqlKeyDefault)
 	}
 
-	redisCon := jredis.GlobalInst().Conn(redisDefault)
+	redisCon := dbs.RedisInst().Conn(redisDefault)
 	defer redisCon.Close()
 	if rst, err := redis.String(redisCon.Do("ping")); err != nil {
 		xlog.Error("redis ping error: %v", err)
@@ -41,6 +40,6 @@ func InitModels() error {
 		xlog.Debug("redis ping ok: rst=%v", rst)
 	}
 
-	xlog.Info("===> project=%v init models ok ", os.Args[0])
+	xlog.Info("===> Models(%v) init ok", os.Args[0])
 	return nil
 }

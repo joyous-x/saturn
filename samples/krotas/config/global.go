@@ -7,17 +7,17 @@ import (
 	"sync"
 )
 
-func makeConfItem(binpath string) ([]*ConfItem, error) {
+func makeConfItem(configPath string) ([]*ConfItem, error) {
 	items := []*ConfItem{}
 
-	if len(binpath) < 1 {
-		tmp, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if len(configPath) < 1 {
+		binpath, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
 			return items, err
 		}
-		binpath = tmp
+		configPath = filepath.Join(binpath, "./env/config/local/")
 	}
-	dirpath := filepath.Join(binpath, "./config")
+	dirpath := configPath
 	xlog.Debug("makeConfItem dirpath=%v", dirpath)
 
 	items = append(items, &ConfItem{CfgKeyLog, filepath.Join(dirpath, "logs.yaml"), &xlog.XLogConf{}})
@@ -34,19 +34,16 @@ func GlobalInst() *ConfigMgr {
 	return g_configs
 }
 
-// InitGlobalInst 初始化全局配置管理器: args=[env, binpath ...]
+// InitGlobalInst 初始化全局配置管理器: args=[configPath ...]
 func InitGlobalInst(args ...string) *ConfigMgr {
 	g_configs_once.Do(func() {
-		binpath, env := "", ""
-		if len(args) > 1 {
-			binpath = args[1]
-		}
+		configPath := ""
 		if len(args) > 0 {
-			env = args[0]
+			configPath = args[0]
 		}
-		xlog.Debug("InitGlobalInst env=%v binpath=%v ready", env, binpath)
+		xlog.Debug("InitGlobalInst configPath=%v: ready", configPath)
 
-		confs, err := makeConfItem(binpath)
+		confs, err := makeConfItem(configPath)
 		if err != nil {
 			xlog.Error("configmgr makeConfItem err:%v", err)
 			return
@@ -61,7 +58,7 @@ func InitGlobalInst(args ...string) *ConfigMgr {
 			return
 		}
 		g_configs = configMgr
-		xlog.Debug("InitGlobalInst env=%v: complete", env)
+		xlog.Info("===> InitGlobalInst(%v) init ok: %v ", os.Args[0], configPath)
 	})
 	return g_configs
 }

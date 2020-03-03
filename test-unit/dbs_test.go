@@ -3,8 +3,6 @@ package main
 import (
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/dbs"
-	"github.com/joyous-x/saturn/dbs/jmysql"
-	"github.com/joyous-x/saturn/dbs/jredis"
 	"testing"
 )
 
@@ -34,11 +32,11 @@ func TestDbs(t *testing.T) {
 	}
 
 	xlog.Debug("-------test start ")
-	conn := jredis.GlobalInst(redisConf).Conn("default")
+	conn := dbs.RedisInst(redisConf).Conn("default")
 	xlog.Debug("-------test : redisconn=%v ", conn)
-	sql, _ := jmysql.GlobalInst(mysqlConf).DB("default")
+	sql, _ := dbs.MysqlInst(mysqlConf).DB("default")
 	xlog.Debug("-------test : sql=%v ", sql)
-	sqlOrm, _ := jmysql.GlobalInst().DBOrm("default_orm")
+	sqlOrm, _ := dbs.MysqlInst().DBOrm("default_orm")
 	xlog.Debug("-------test : sqlOrm=%v ", sqlOrm)
 	xlog.Debug("-------test end")
 }
