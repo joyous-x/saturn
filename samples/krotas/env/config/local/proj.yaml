@@ -1,9 +1,9 @@
 httpserver:
   - 
-    key: default
+    name: default
     port: 8000
   - 
-    key: inner
+    name: inner
     port: 8001
 
 wxminiapp:

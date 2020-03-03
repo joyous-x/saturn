@@ -46,6 +46,7 @@ func (this *GinBox) Init(configs []*ServerConfig, middleware ...gin.HandlerFunc)
 			this.servers[v.Name] = s
 		}
 	}
+	
 	return nil
 }
 
@@ -92,11 +93,12 @@ func (this *GinBox) Run() error {
 	}
 
 	var waitGroup sync.WaitGroup
-	for _, s := range this.servers {
+	for i, _ := range this.servers {
 		waitGroup.Add(1)
+		index := i
 		go func() {
 			defer waitGroup.Done()
-			s.Run()
+			this.servers[index].Run()
 		}()
 	}
 

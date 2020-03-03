@@ -100,3 +100,12 @@ func IsDir(path string) bool {
 	}
 	return true
 }
+
+func PathRelative2Bin(relative string) (string, error) {
+	binpath, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		return "", err
+	}
+	rst := filepath.Join(binpath, relative)
+	return rst, nil
+}
