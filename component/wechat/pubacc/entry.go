@@ -1,14 +1,14 @@
 package pubacc
 
 import (
-	"ceggs/wechat"
-	"ceggs/wechat/pubacc/message"
-	"ceggs/wechat/pubacc/util"
+	"github.com/joyous-x/saturn/component/wechat"
+	"github.com/joyous-x/saturn/component/wechat/pubacc/message"
+	"github.com/joyous-x/saturn/component/wechat/pubacc/util"
 	"crypto/sha1"
 	"encoding/xml"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/joyous-x/enceladus/common/xlog"
+	"github.com/joyous-x/saturn/common/xlog"
 	"io"
 	"io/ioutil"
 	"reflect"

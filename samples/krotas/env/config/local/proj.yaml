@@ -8,7 +8,7 @@ httpserver:
 
 wxminiapp:
   miniapp:
-    app_id: ""
+    app_id: "test-appid"
     app_secret: ""
   pubacc:
     app_id: ""

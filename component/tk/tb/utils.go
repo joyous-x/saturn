@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/joyous-x/enceladus/common/xlog"
+	"github.com/joyous-x/saturn/common/xlog"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -345,7 +345,7 @@ func ParseTKResponse(respBytes []byte) (*TBRespNorm, error) {
 // 			url		String	true	https://uland.taobao.com/	口令跳转目标页
 // 			logo	String	false	https://uland.taobao.com/	口令弹框logoURL
 // 			ext		String	false	{}	扩展字段JSON格式
-func GenerateTpwd(text, url, logo, userId, ext string) (string, error) {
+func GenerateTpwd(appKey, appSecret, text, url, logo, userId, ext string) (string, error) {
 	rst := ""
 	if len(text) < 1 || len(url) < 1 {
 		return rst, fmt.Errorf("invalid param: text or url")
@@ -363,7 +363,7 @@ func GenerateTpwd(text, url, logo, userId, ext string) (string, error) {
 	if len(userId) > 0 {
 		reqArgs["user_id"] = userId
 	}
-	respBytes, err := DoTKRequest("taobao.tbk.tpwd.create", reqArgs)
+	respBytes, err := DoTKRequest(appKey, appSecret, "taobao.tbk.tpwd.create", reqArgs)
 	if err != nil {
 		return rst, err
 	} else {
@@ -382,7 +382,7 @@ func GenerateTpwd(text, url, logo, userId, ext string) (string, error) {
 }
 
 // MakeMyTKShare 解析 DoTKRequest 的请求结果
-func MakeMyTKShare(userId string, genTpwd bool, info map[string]interface{}) (*TBMyShareItemInfo, error) {
+func MakeMyTKShare(appKey, appSecret, userId string, genTpwd bool, info map[string]interface{}) (*TBMyShareItemInfo, error) {
 	prodInfo := &TBMyShareItemInfo{}
 	infoStr, err := json.Marshal(info)
 	if err != nil {
@@ -400,7 +400,7 @@ func MakeMyTKShare(userId string, genTpwd bool, info map[string]interface{}) (*T
 		}
 		pictUrl := prodInfo.PictUrl
 		pictUrl = ""
-		tpwd, err := GenerateTpwd(prodInfo.Title, urls, pictUrl, userId, "{}")
+		tpwd, err := GenerateTpwd(appKey, appSecret, prodInfo.Title, urls, pictUrl, userId, "{}")
 		if err != nil {
 			fmt.Printf("MakeMyTKShare error: %v %v \n", err, fmt.Sprintf("%v%v", "https:", prodInfo.CouponShareUrl))
 			return prodInfo, fmt.Errorf("GenerateTpwd error(%v) url=%v", err, urls)

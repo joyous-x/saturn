@@ -2,7 +2,7 @@ package tb
 
 import (
 	"fmt"
-	"github.com/joyous-x/enceladus/common/xlog"
+	"github.com/joyous-x/saturn/common/xlog"
 )
 
 const (
@@ -77,7 +77,7 @@ func SearchForCoupon(content string, force bool, cfg *TkTbConfig) (*ParseForCoup
 	var rst map[string]interface{}
 	if len(prodid) > 0 {
 		for i := range rstList {
-			item, err := MakeMyTKShare(cfg.UserId, false, rstList[i].(map[string]interface{}))
+			item, err := MakeMyTKShare(cfg.AppKey, cfg.AppSecret, cfg.UserId, false, rstList[i].(map[string]interface{}))
 			if err != nil {
 				xlog.Debug("ParseForCoupon.MakeMyTKShare ===> genTpwd=false index=%v err=%v", i, err)
 				continue
@@ -89,7 +89,7 @@ func SearchForCoupon(content string, force bool, cfg *TkTbConfig) (*ParseForCoup
 		}
 	}
 	if rst != nil {
-		item, err := MakeMyTKShare(cfg.UserId, true, rst)
+		item, err := MakeMyTKShare(cfg.AppKey, cfg.AppSecret, cfg.UserId, true, rst)
 		if err != nil {
 			xlog.Debug("ParseForCoupon.MakeMyTKShare ===> genTpwd=true data=%+v err=%v", rst, err)
 			return resp, err
@@ -98,7 +98,7 @@ func SearchForCoupon(content string, force bool, cfg *TkTbConfig) (*ParseForCoup
 	} else {
 		resp.Relative = make([]*TBMyShareItemInfo, 0, maxRespLen)
 		for i := range rstList {
-			item, err := MakeMyTKShare(cfg.UserId, true, rstList[i].(map[string]interface{}))
+			item, err := MakeMyTKShare(cfg.AppKey, cfg.AppSecret, cfg.UserId, true, rstList[i].(map[string]interface{}))
 			if err != nil {
 				xlog.Debug("ParseForCoupon.MakeMyTKShare ===> genTpwd=false index=%v err=%v", i, err)
 				return resp, err

@@ -26,7 +26,7 @@ func HttpRouter(ginbox *gins.GinBox) error {
 
 	httpRouterStatic(ginbox.Server().Engine())
 
-	wxcom.InitRouter("/v1", ginbox.Server().Engine())
+	wxcom.InitRouter("/wx", ginbox.Server().Engine())
 
 	ginbox.Server().Engine().POST("/v1/user/login", biz.UserLogin)
 	return nil
