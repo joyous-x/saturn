@@ -19,6 +19,7 @@ import (
 
 type MsgHandler func(*message.MixMessage) (*message.Reply, error)
 
+// MsgRequestData struct of request
 type MsgRequestData struct {
 	OpenID    string `json:"openid"`
 	Nonce     string `json:"nonce"`
@@ -48,6 +49,7 @@ func checkSign(signature string, params ...string) bool {
 	return signature == makeSign(params...)
 }
 
+// ParseRequestFromGin parse message from gin's request
 func ParseRequestFromGin(c *gin.Context, wxcfg *wechat.WxConfig, needCheckSign bool) (*MsgRequestData, error) {
 	xlog.Debug("ParseRequestFromGin ===> Params = %+v", c.Params)
 	xlog.Debug("ParseRequestFromGin ===> Request.URL = %+v", c.Request.URL.Query())

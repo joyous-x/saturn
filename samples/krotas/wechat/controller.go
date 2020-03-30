@@ -2,20 +2,20 @@ package wechat
 
 import (
 	"fmt"
-	"net/http"
 	"github.com/gin-gonic/gin"
-	"github.com/joyous-x/saturn/common/reqresp"
+	"github.com/gomodule/redigo/redis"
 	"github.com/joyous-x/saturn/common/errors"
 	comerrors "github.com/joyous-x/saturn/common/errors"
+	"github.com/joyous-x/saturn/common/reqresp"
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/component/wechat"
 	"github.com/joyous-x/saturn/component/wechat/miniapp"
 	"github.com/joyous-x/saturn/component/wechat/pubacc"
 	"github.com/joyous-x/saturn/dbs"
-	"github.com/gomodule/redigo/redis"
 	"krotas/config"
-	"krotas/model"
 	"krotas/wechat/biz"
+	wxdao "krotas/wechat/dao"
+	"net/http"
 )
 
 type wxMiniappLoginReq struct {
@@ -93,7 +93,7 @@ func wxMiniappUpdateUser(c *gin.Context) {
 		return
 	}
 
-	wxUserInfo, err := model.UserDaoInst().GetUserInfoByUUID(ctx, req.AppId, req.Uid)
+	wxUserInfo, err := wxdao.UserDaoInst().GetUserInfoByUUID(ctx, req.AppId, req.Uid)
 	if err != nil {
 		xlog.Error("WxUpdateUserInfo GetUserInfoByUUID (%s %s) fail: %v", req.AppId, req.Uid, err)
 		reqresp.ResponseMarshal(c, -2, err.Error(), nil)
@@ -105,7 +105,7 @@ func wxMiniappUpdateUser(c *gin.Context) {
 		reqresp.ResponseMarshal(c, -3, err.Error(), nil)
 	}
 
-	err = model.UserDaoInst().UpdateUserExtInfo(ctx, req.AppId, req.Uid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
+	err = wxdao.UserDaoInst().UpdateUserExtInfo(ctx, req.AppId, req.Uid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
 	if err != nil {
 		xlog.Error("WxUpdateUserInfo UpdateUserExtInfo (%s) fail: %v", req.Uid, err)
 		reqresp.ResponseMarshal(c, -4, err.Error(), nil)

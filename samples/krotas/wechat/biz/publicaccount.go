@@ -2,15 +2,14 @@ package biz
 
 import (
 	"fmt"
-	"github.com/joyous-x/saturn/component/wechat/pubacc/message"
 	tktb "github.com/joyous-x/saturn/component/tk/tb"
+	"github.com/joyous-x/saturn/component/wechat/pubacc/message"
 )
-
 
 func MyMsgHandler(v *message.MixMessage) (*message.Reply, error) {
 	resp := &message.Reply{}
 
-	tkcfg := &tktb.TkTbConfig {} // TODO
+	tkcfg := &tktb.TkTbConfig{} // TODO
 
 	switch v.MsgType {
 	//文本消息

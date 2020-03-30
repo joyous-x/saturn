@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/gins"
-	"krotas/biz"
-	wxcom "krotas/wechat"
+	"krotas/user"
+	"krotas/wechat"
 	"net/http"
 )
 
@@ -26,8 +26,8 @@ func HttpRouter(ginbox *gins.GinBox) error {
 
 	httpRouterStatic(ginbox.Server().Engine())
 
-	wxcom.InitRouter("/wx", ginbox.Server().Engine())
+	wechat.InitRouter("/wx", ginbox.Server().Engine())
+	user.InitRouter("/user", ginbox.Server().Engine())
 
-	ginbox.Server().Engine().POST("/v1/user/login", biz.UserLogin)
 	return nil
 }

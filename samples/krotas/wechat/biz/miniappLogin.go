@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"krotas/config"
-	"krotas/model"
+	wxdao "krotas/wechat/dao"
 )
 
 type userInfoUpdateReqData struct {
@@ -40,7 +40,7 @@ func MiniAppLogin(ctx context.Context, appname, jsCode, inviter string) (uuid, t
 		xlog.Debug("wxMiniAppLogin appid=%v jscode=%v succ: openid=%v sessionkey=%v", appid, jsCode, openID, sessionKey)
 	}
 
-	wxUser, err := model.UserDaoInst().GetUserInfoByOpenID(ctx, appname, openID)
+	wxUser, err := wxdao.UserDaoInst().GetUserInfoByOpenID(ctx, appname, openID)
 	if err != nil {
 		xlog.Error("wxMiniAppLogin GetUserInfoByOpenID appid=%v openID=%v err=%v", appid, openID, err)
 		return
@@ -67,13 +67,13 @@ func MiniAppLogin(ctx context.Context, appname, jsCode, inviter string) (uuid, t
 	}
 	token = newToken(appname, uuid)
 
-	err = model.PutWxToken(appname, uuid, token)
+	err = wxdao.PutWxToken(appname, uuid, token)
 	if err != nil {
 		xlog.Error("wxMiniAppLogin PutWxToken appid=%v openid=%v err=%v", appid, openID, err)
 		return
 	}
 
-	err = model.UserDaoInst().UpdateUserBaseInfo(ctx, appname, uuid, openID, sessionKey, 0, inviter)
+	err = wxdao.UserDaoInst().UpdateUserBaseInfo(ctx, appname, uuid, openID, sessionKey, 0, inviter)
 	if err != nil {
 		xlog.Error("wxMiniAppLogin UpdateUserBaseInfo appid=%v openid=%v err=%v", appid, openID, err)
 		return
