@@ -2,16 +2,11 @@ package user
 
 import (
 	"context"
-	"fmt"
 	"github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/component/user/errors"
 	"github.com/joyous-x/saturn/component/user/model"
 	"github.com/joyous-x/saturn/component/wechat"
 	"github.com/joyous-x/saturn/component/wechat/miniapp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type userInfoUpdateReqData struct {

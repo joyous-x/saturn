@@ -1,7 +1,6 @@
 package reqresp
 
-// ReqCommon common header in a request
-type ReqCommon struct {
+type ReqCommonData struct {
 	Uid       string `json:"uid,omitempty"`
 	AppId     string `json:"appid,omitempty"`
 	RequestId string `json:"request_id,omitempty"`
@@ -10,8 +9,7 @@ type ReqCommon struct {
 	EchoToken string `json:"echo_token"`
 }
 
-// RespCommon common header in a response
-type RespCommon struct {
+type RespCommonData struct {
 	Ret               int    `json:"ret"`
 	Msg               string `json:"msg"`
 	RequestId string `json:"request_id,omitempty"`
@@ -20,20 +18,30 @@ type RespCommon struct {
 	EchoToken string `json:"echo_token"`
 }
 
+// ReqCommon common header in a request
+type ReqCommon struct {
+	Common ReqCommonData `json:"common"`
+}
+
+// RespCommon common header in a response
+type RespCommon struct {
+	Common RespCommonData `json:"common"`
+}
+
 // IRequest the interface of request datas
 type IRequest interface {
-	GetCommon() *ReqCommon
+	GetCommon() *ReqCommonData
 }
 
 // IResponse the interface of response datas
 type IResponse interface {
-	GetCommon() *RespCommon
+	GetCommon() *RespCommonData
 }
 
-func (r *ReqCommon) GetCommon() *ReqCommon {
-	return r
+func (r *ReqCommon) GetCommon() *ReqCommonData {
+	return &r.Common
 }
-func (r *RespCommon) GetCommon() *RespCommon {
-	return r
+func (r *RespCommon) GetCommon() *RespCommonData {
+	return &r.Common
 }
 

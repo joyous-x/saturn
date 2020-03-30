@@ -10,6 +10,6 @@ func code(id int) int {
 
 var (
 	OK              = errors.OK
-	ErrBadRequest   = NewError(code(001), "bad request")
+	ErrBadRequest   = errors.NewError(code(001), "bad request")
 	ErrAuthForbiden = errors.ErrAuthForbiden
 )

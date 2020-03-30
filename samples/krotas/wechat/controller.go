@@ -65,7 +65,7 @@ func wxMiniappLogin(c *gin.Context) {
 		return
 	}
 
-	uuid, token, isNewUser, err := biz.MiniAppLogin(ctx, req.AppId, req.JsCode, req.Inviter)
+	uuid, token, isNewUser, err := biz.MiniAppLogin(ctx, req.Common.AppId, req.JsCode, req.Inviter)
 	if err != nil {
 		reqresp.ResponseMarshal(c, -2, err.Error(), &resp)
 		return
@@ -86,31 +86,31 @@ func wxMiniappUpdateUser(c *gin.Context) {
 		reqresp.ResponseMarshal(c, -1, err.Error(), nil)
 		return
 	}
-	_, exist := config.GlobalInst().CfgProj().WxApps[req.AppId]
+	_, exist := config.GlobalInst().CfgProj().WxApps[req.Common.AppId]
 	if !exist {
-		err = fmt.Errorf("invalid appid: %v", req.AppId)
+		err = fmt.Errorf("invalid appid: %v", req.Common.AppId)
 		reqresp.ResponseMarshal(c, -1, err.Error(), nil)
 		return
 	}
 
-	wxUserInfo, err := wxdao.UserDaoInst().GetUserInfoByUUID(ctx, req.AppId, req.Uid)
+	wxUserInfo, err := wxdao.UserDaoInst().GetUserInfoByUUID(ctx, req.Common.AppId, req.Common.Uid)
 	if err != nil {
-		xlog.Error("WxUpdateUserInfo GetUserInfoByUUID (%s %s) fail: %v", req.AppId, req.Uid, err)
+		xlog.Error("WxUpdateUserInfo GetUserInfoByUUID (%s %s) fail: %v", req.Common.AppId, req.Common.Uid, err)
 		reqresp.ResponseMarshal(c, -2, err.Error(), nil)
 	}
 
 	infos, err := miniapp.DecryptWxUserInfo(req.EncryptedData, req.Iv, wxUserInfo.SessionKey)
 	if err != nil {
-		xlog.Error("WxUpdateUserInfo DecryptWxUserInfo (%s %s) encrypted_data=%v fail: %v", req.AppId, req.Uid, req.EncryptedData, err)
+		xlog.Error("WxUpdateUserInfo DecryptWxUserInfo (%s %s) encrypted_data=%v fail: %v", req.Common.AppId, req.Common.Uid, req.EncryptedData, err)
 		reqresp.ResponseMarshal(c, -3, err.Error(), nil)
 	}
 
-	err = wxdao.UserDaoInst().UpdateUserExtInfo(ctx, req.AppId, req.Uid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
+	err = wxdao.UserDaoInst().UpdateUserExtInfo(ctx, req.Common.AppId, req.Common.Uid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
 	if err != nil {
-		xlog.Error("WxUpdateUserInfo UpdateUserExtInfo (%s) fail: %v", req.Uid, err)
+		xlog.Error("WxUpdateUserInfo UpdateUserExtInfo (%s) fail: %v", req.Common.Uid, err)
 		reqresp.ResponseMarshal(c, -4, err.Error(), nil)
 	} else {
-		xlog.Debug("WxUpdateUserInfo appname=%v uuid=%v nickname=%v avatar=%v", req.AppId, req.Uid, infos.NickName, infos.AvatarURL)
+		xlog.Debug("WxUpdateUserInfo appname=%v uuid=%v nickname=%v avatar=%v", req.Common.AppId, req.Common.Uid, infos.NickName, infos.AvatarURL)
 	}
 
 	reqresp.ResponseMarshal(c, comerrors.OK.Code, comerrors.OK.Msg, nil)
@@ -125,9 +125,9 @@ func wxMiniappAccessToken(c *gin.Context) {
 		reqresp.ResponseMarshal(c, -1, err.Error(), nil)
 		return
 	}
-	wxcfg, ok := config.GlobalInst().CfgProj().WxApps[req.AppId]
+	wxcfg, ok := config.GlobalInst().CfgProj().WxApps[req.Common.AppId]
 	if !ok {
-		err = fmt.Errorf("invalid appid: %v", req.AppId)
+		err = fmt.Errorf("invalid appid: %v", req.Common.AppId)
 		reqresp.ResponseMarshal(c, -1, err.Error(), nil)
 		return
 	}
