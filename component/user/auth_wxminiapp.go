@@ -1,12 +1,18 @@
 package user
 
 import (
+	"fmt"
 	"context"
-	"github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/component/user/model"
 	"github.com/joyous-x/saturn/component/wechat"
 	"github.com/joyous-x/saturn/component/wechat/miniapp"
+	guuid "github.com/google/uuid"
+	comerrors "github.com/joyous-x/saturn/common/errors"
+	"github.com/joyous-x/saturn/common/utils"
+	"hash/crc64"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type userInfoUpdateReqData struct {
@@ -34,62 +40,67 @@ type wxAccessTokenResp struct {
 	Token string `json:"access_token"`
 }
 
-// loginByWxMiniApp register wechat user
-func loginByWxMiniApp(ctx context.Context, wxConfig *wechat.WxConfig, jsCode string) {
-	appid := wxConfig.AppID
-	appsecret := wxConfig.AppSecret
-	appname := wxConfig.AppName
-
-	openID, sessionKey, err := miniapp.WxMiniAppLogin(appid, appsecret, jsCode)
+// LoginByWxMiniApp authorizate and register wechat user
+func LoginByWxMiniApp(ctx context.Context, appid, appname, appsecret, jsCode, inviter string) (uuid, token string, isNewUser bool, err error) {
+	openID, sessionKey, err := miniapp.WxMiniAppAuth(appid, appsecret, jsCode)
 	if err != nil {
-		xlog.Error("loginByWxMiniApp appid=%v jscode=%v err=%v", appid, jsCode, err)
-		return
-	} else {
-		xlog.Debug("loginByWxMiniApp appid=%v jscode=%v succ: openid=%v sessionkey=%v", appid, jsCode, openID, sessionKey)
-	}
-
-	wxUser, err := model.GetUserInfoByOpenID(ctx, appname, openID)
-	if err != nil {
-		xlog.Error("loginByWxMiniApp GetUserInfoByOpenID appid=%v openID=%v err=%v", appid, openID, err)
+		xlog.Error("wxMiniAppLogin appid=%v jscode=%v err=%v", appid, jsCode, err)
 		return
 	}
 
-	uuid := wxUser.UUID
-	if wxUser.UUID == "" {
-		uuid = utils.NewUUID(appname, openID)
-		err = model.UpdateUserInfo(ctx, appname, uuid, openID, sessionKey, 0, inviter)
+	wxUser, err := UserDaoInst().GetUserInfoByOpenID(ctx, appname, openID)
+	if err != nil {
+		xlog.Error("wxMiniAppLogin GetUserInfoByOpenID appid=%v openID=%v err=%v", appid, openID, err)
+		return
+	}
+
+	newUUID := func(appname, openid string) string {
+		return utils.CalMD5(strings.Replace(guuid.New().String(), "-", "", -1) + appname + openid)
+	}
+	newToken := func(appname, uuid string) string {
+		suffix := strconv.FormatInt(time.Now().UnixNano(), 10) + guuid.New().String()
+		hash64 := crc64.Checksum([]byte(appname+uuid+suffix), crc64.MakeTable(crc64.ISO))
+		return fmt.Sprintf("%x", hash64)
+	}
+
+	if wxUser.Uuid == "" {
+		uuid = newUUID(appname, openID)
 	} else {
+		uuid = wxUser.Uuid
 		if wxUser.Status != 0 {
-			err = errors.ErrAuthForbiden
+			err = comerrors.ErrAuthForbiden.Err()
+			return
 		}
 	}
+	token = newToken(appname, uuid)
 
+	err = UserDaoInst().UpdateUserBaseInfo(ctx, appname, uuid, openID, sessionKey, 0, inviter)
 	if err != nil {
 		xlog.Error("wxMiniAppLogin UpdateUserBaseInfo appid=%v openid=%v err=%v", appid, openID, err)
+		return
 	}
 
-	return err
+	return
 }
 
 // updateByWxMiniApp 更新用户信息
 func updateByWxMiniApp(ctx context.Context, wxConfig *wechat.WxConfig, reqData *userInfoUpdateReqData) error {
-	appid := wxConfig.AppID
-	appsecret := wxConfig.AppSecret
 	appname := wxConfig.AppName
+	appname, uuid := "", ""
 
-	wxUser, err := model.GetUserInfoByUUID(ctx, appname, uuid)
+	wxUser, err := UserDaoInst().GetUserInfoByUUID(ctx, appname, uuid)
 	if err != nil {
 		xlog.Error("GetUserInfoByUUID (%s %s) fail: %v", appname, uuid, err)
 		return err
 	}
 
-	infos, err := wxminiapp.DecryptWxUserInfo(reqData.EncryptedData, reqData.Iv, wxUser.SessionKey)
+	infos, err := miniapp.DecryptWxUserInfo(reqData.EncryptedData, reqData.Iv, wxUser.SessionKey)
 	if err != nil {
 		xlog.Error("DecryptWxUserInfo (%s %s) encrypted_data=%v fail: %v", appname, uuid, reqData.EncryptedData, err)
 		return err
 	}
 
-	err = model.UpdateUserExtInfo(ctx, appname, uuid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
+	err = UserDaoInst().UpdateUserExtInfo(ctx, appname, uuid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
 	if err != nil {
 		xlog.Error("UpdateUserExtInfo (%s) fail: %v", uuid, err)
 	} else {

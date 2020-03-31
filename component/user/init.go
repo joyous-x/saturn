@@ -1,27 +1,26 @@
-package dao
+package user
 
 import (
 	"github.com/joyous-x/saturn/component/user/model"
-	"github.com/joyous-x/saturn/dbs"
+	"github.com/jinzhu/gorm"
 	"sync"
-)
-
-const (
-	mysqlKeyMinipro = "minipro"
 )
 
 var gUserdaoOnce sync.Once
 var gUserDaoInst *model.UserDao
 
+// Init must be called before UserDaoInst
+func Init(dbOrm *gorm.DB) error {
+	return UserDaoInst().SetDbOrm(dbOrm)
+}
+
 // UserDaoInst ...
 func UserDaoInst() *model.UserDao {
 	gUserdaoOnce.Do(func() {
-		dbOrm, err := dbs.MysqlInst().DBOrm(mysqlKeyMinipro)
-		if err != nil {
-			panic("init database fail")
-		}
 		gUserDaoInst = &model.UserDao{}
-		gUserDaoInst.SetDbOrm(dbOrm)
 	})
+	if gUserDaoInst.GetDbOrm() == nil {
+		panic("invalid gorm.DB")
+	}
 	return gUserDaoInst
 }

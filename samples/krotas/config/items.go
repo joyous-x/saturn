@@ -19,6 +19,7 @@ type ConfProj struct {
 
 type WxMiniAppInfo struct {
 	AppID          string `yaml:"app_id"`
+	AppName        string `yaml:"app_name"`
 	AppSecret      string `yaml:"app_secret"`
 	EncodingAESKey string `yaml:"app_aeskey"`
 	Token          string `yaml:"token"`

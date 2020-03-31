@@ -8,6 +8,7 @@ import (
 	comerrors "github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/common/reqresp"
 	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/component/user"
 	"github.com/joyous-x/saturn/component/wechat"
 	"github.com/joyous-x/saturn/component/wechat/miniapp"
 	"github.com/joyous-x/saturn/component/wechat/pubacc"
@@ -65,10 +66,22 @@ func wxMiniappLogin(c *gin.Context) {
 		return
 	}
 
-	uuid, token, isNewUser, err := biz.MiniAppLogin(ctx, req.Common.AppId, req.JsCode, req.Inviter)
+	appInfo, ok := config.GlobalInst().CfgProj().WxApps[req.Common.AppId]
+	if !ok {
+		err = fmt.Errorf("invalid appname: %v", appInfo.AppName)
+		reqresp.ResponseMarshal(c, -1, err.Error(), &resp)
+		return
+	}
+
+	uuid, token, isNewUser, err := user.LoginByWxMiniApp(ctx, appInfo.AppID, appInfo.AppName, appInfo.AppSecret , req.JsCode, req.Inviter)
 	if err != nil {
 		reqresp.ResponseMarshal(c, -2, err.Error(), &resp)
 		return
+	}
+	
+	err = wxdao.PutWxToken(appInfo.AppID, uuid, token)
+	if err != nil {
+		xlog.Error("wxMiniappLogin PutWxToken appid=%v uuid=%v err=%v", appInfo.AppID, uuid, err)
 	}
 
 	resp.UUID = uuid
@@ -93,7 +106,7 @@ func wxMiniappUpdateUser(c *gin.Context) {
 		return
 	}
 
-	wxUserInfo, err := wxdao.UserDaoInst().GetUserInfoByUUID(ctx, req.Common.AppId, req.Common.Uid)
+	wxUserInfo, err := user.UserDaoInst().GetUserInfoByUUID(ctx, req.Common.AppId, req.Common.Uid)
 	if err != nil {
 		xlog.Error("WxUpdateUserInfo GetUserInfoByUUID (%s %s) fail: %v", req.Common.AppId, req.Common.Uid, err)
 		reqresp.ResponseMarshal(c, -2, err.Error(), nil)
@@ -105,7 +118,7 @@ func wxMiniappUpdateUser(c *gin.Context) {
 		reqresp.ResponseMarshal(c, -3, err.Error(), nil)
 	}
 
-	err = wxdao.UserDaoInst().UpdateUserExtInfo(ctx, req.Common.AppId, req.Common.Uid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
+	err = user.UserDaoInst().UpdateUserExtInfo(ctx, req.Common.AppId, req.Common.Uid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
 	if err != nil {
 		xlog.Error("WxUpdateUserInfo UpdateUserExtInfo (%s) fail: %v", req.Common.Uid, err)
 		reqresp.ResponseMarshal(c, -4, err.Error(), nil)

@@ -3,6 +3,8 @@ package user
 import (
 	"context"
 	"encoding/json"
+	"github.com/joyous-x/saturn/component/user/model"
+	"github.com/joyous-x/saturn/component/user/errors"
 )
 
 const (
@@ -22,7 +24,7 @@ type LoginParams struct {
 	WX            LoginWxParams        `json:"wx"`         // 微信登录
 	QQ            LoginQQParams        `json:"qq"`         // QQ登录
 	Mobile        LoginMobileParams    `json:"mobile"`     // 手机登录
-	WxMini        LoginWxMiniAppParams `json:"wx_miniapp"` // 手机登录微信小程序
+	WxMini        LoginWxMiniAppParams `json:"wx_miniapp"` // 微信小程序
 }
 
 type LoginWxMiniAppParams struct {
@@ -43,22 +45,21 @@ type LoginMobileParams struct {
 	CodeType string `json:"type"`  // 验证码序列号
 }
 
-func Login(ctx context.Context, req *LoginParams) (*UserInfo, error) {
-	userInfo := &UserInfo{}
-	var user interface{}
+func Login(ctx context.Context, req *LoginParams) (*model.UserInfo, error) {
+	userInfo := &model.UserInfo{}
 	var err error
 	switch req.LoginType {
 	case LoginTypeQQ:
-		user, err = loginByQQ(ctx, req)
+		userInfo, err = loginByQQ(ctx, req)
 	case LoginTypeWxH5:
 	case LoginTypeWxApp:
-		user, err = loginByWX(ctx, req)
-	case LoginTypeWxMiniApp:
-		user, err = loginByWxMiniApp(ctx, req)
+		userInfo, err = loginByWX(ctx, req)
 	case LoginTypeMobile:
-		user, err = loginByMobile(ctx, req)
+		userInfo, err = loginByMobile(ctx, req)
+	case LoginTypeWxMiniApp:
+		// TODO: LoginByWxMiniApp
 	default:
-		user, err = nil, code.BadRequest
+		userInfo, err = nil, errors.ErrBadRequest
 	}
 	if err != nil {
 		return userInfo, err

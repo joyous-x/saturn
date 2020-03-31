@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/gins"
+	"github.com/joyous-x/saturn/dbs"
+	"github.com/joyous-x/saturn/component/user"
 	"krotas/config"
 	"krotas/model"
 	"krotas/router"
@@ -12,7 +14,16 @@ import (
 
 const (
 	env = "local"
+	mysqlKeyMinipro = "minipro"
 )
+
+func initUserComponent() {
+	dbOrm, err := dbs.MysqlInst().DBOrm(mysqlKeyMinipro)
+	if err != nil {
+		panic("init database fail")
+	}
+	user.Init(dbOrm)
+}
 
 func main() {
 	xlog.Debug("gins sample ===> start ")
@@ -28,6 +39,7 @@ func main() {
 	if err := model.InitModels(); err != nil {
 		panic(err)
 	}
+	initUserComponent()
 
 	ginbox := gins.DefaultBox()
 	err := ginbox.Init(cfgMgr.CfgProj().HttpConfs)

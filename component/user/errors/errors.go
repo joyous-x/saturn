@@ -1,4 +1,4 @@
-package user
+package errors
 
 import (
 	"github.com/joyous-x/saturn/common/errors"
