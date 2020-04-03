@@ -2,4 +2,4 @@ vendor
 bin
 pkg
 .VSCodeCounter
-./samples/krotas/krotas
+samples/krotas/krotas

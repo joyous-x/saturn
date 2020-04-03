@@ -5,13 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 	"github.com/joyous-x/saturn/common/errors"
-	comerrors "github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/common/reqresp"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/component/user"
-	"github.com/joyous-x/saturn/component/wechat"
-	"github.com/joyous-x/saturn/component/wechat/miniapp"
-	"github.com/joyous-x/saturn/component/wechat/pubacc"
+	"github.com/joyous-x/saturn/satellite/user"
+	"github.com/joyous-x/saturn/satellite/wechat"
+	"github.com/joyous-x/saturn/satellite/wechat/miniapp"
+	"github.com/joyous-x/saturn/satellite/wechat/pubacc"
 	"github.com/joyous-x/saturn/dbs"
 	"krotas/config"
 	"krotas/wechat/biz"
@@ -87,7 +86,7 @@ func wxMiniappLogin(c *gin.Context) {
 	resp.UUID = uuid
 	resp.Token = token
 	resp.IsNewUser = isNewUser
-	reqresp.ResponseMarshal(c, comerrors.OK.Code, comerrors.OK.Msg, &resp)
+	reqresp.ResponseMarshal(c, errors.OK.Code, errors.OK.Msg, &resp)
 	return
 }
 
@@ -126,7 +125,7 @@ func wxMiniappUpdateUser(c *gin.Context) {
 		xlog.Debug("WxUpdateUserInfo appname=%v uuid=%v nickname=%v avatar=%v", req.Common.AppId, req.Common.Uid, infos.NickName, infos.AvatarURL)
 	}
 
-	reqresp.ResponseMarshal(c, comerrors.OK.Code, comerrors.OK.Msg, nil)
+	reqresp.ResponseMarshal(c, errors.OK.Code, errors.OK.Msg, nil)
 	return
 }
 

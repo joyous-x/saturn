@@ -6,6 +6,7 @@ import (
 	"github.com/joyous-x/saturn/common/xlog"
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 )
 
@@ -108,4 +109,16 @@ func PathRelative2Bin(relative string) (string, error) {
 	}
 	rst := filepath.Join(binpath, relative)
 	return rst, nil
+}
+
+func GetExecPath() (string,error) {
+	file, err := exec.LookPath(os.Args[0])
+	if err != nil {
+		return "", err
+	}
+	absPath, err := filepath.Abs(file)
+	if err != nil {
+		return "", err
+	}
+	return filepath.Dir(absPath), nil
 }
