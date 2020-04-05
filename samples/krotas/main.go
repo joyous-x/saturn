@@ -6,9 +6,11 @@ import (
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/gins"
 	"github.com/joyous-x/saturn/dbs"
-	"github.com/joyous-x/saturn/satellite/user"
+	
 	"krotas/config"
 	"krotas/model"
+	"krotas/controller"
+	"krotas/biz"
 )
 
 const (
@@ -27,8 +29,8 @@ func initComponents() {
 		panic("init database fail")
 	}
 
-	// initialize component: user
-	user.Init(dbOrm)
+	// initialize components
+	biz.InitSatellates(dbOrm)
 }
 
 func main() {
@@ -57,7 +59,7 @@ func main() {
 	}
 
 	// regist routers
-	HttpRouter(ginbox)
+	ginbox.HttpRouter(controller.New())
 	ginbox.Run()
 
 	xlog.Debug("gins sample ===> end ")

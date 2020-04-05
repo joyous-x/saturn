@@ -30,23 +30,23 @@ func Inst() *Ip2Region {
 
 func defaultIp2RegionInst(dbPath string) *Ip2Region {
 	onceIp2Region.Do(func() {
-		dbFilePath := ""
-		if len(dbPath) < 1 {
-			execPath, err := utils.GetExecPath()
+		dbFilePath := dbPath
+		if len(dbFilePath) < 1 {
+			execDirPath, err := utils.GetExecDirPath()
 			if err != nil {
-				panic(fmt.Sprintf("GetDefaultIp2Region getExecPath error %v", err))
+				panic(fmt.Sprintf("defaultIp2RegionInst getExecPath error %v", err))
 			}
-			dbFilePath = filepath.Join(filepath.Dir(execPath), "conf/ip2region.db")
-		} else {
-			dbFilePath = dbPath
+			dbFilePath = filepath.Join(execDirPath, "env/config/ip2region/ip2region.db")
 		}
-		defaultIp2Region, err := New(dbFilePath)
+		tmpIp2Region, err := New(dbFilePath)
+		if err == nil {
+			_, err = tmpIp2Region.MemorySearch("127.0.0.1")
+		}
 		if err != nil {
-			xlog.Error("GetDefaultIp2Region init error %v", err)
-		} else {
-			xlog.Debug("GetDefaultIp2Region init config = %v", dbFilePath)
+			panic(fmt.Sprintf("new Ip2Region error: %v", err))
 		}
-		_, _ = defaultIp2Region.MemorySearch("127.0.0.1")
+		defaultIp2Region = tmpIp2Region
+		xlog.Debug("defaultIp2RegionInst init ok: %v", dbFilePath)
 	})
 	return defaultIp2Region
 }

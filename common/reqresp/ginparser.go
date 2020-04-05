@@ -9,7 +9,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/common/utils"
+	
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -64,8 +66,8 @@ func requestUnmarshal(c *gin.Context, fnAuthUser FnAuthUser, data IRequest) (ctx
 }
 
 // ResponseMarshal 序列化应答数据
-func ResponseMarshal(c *gin.Context, status int, message string, data IResponse) {
-	responseMarshal(c, status, message, data, http.StatusOK)
+func ResponseMarshal(c *gin.Context, err errors.BaseError, data IResponse) {
+	responseMarshal(c, err.Code, err.Msg, data, http.StatusOK)
 }
 
 func responseMarshal(c *gin.Context, status int, message string, data IResponse, httpcode int) {

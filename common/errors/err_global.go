@@ -17,5 +17,7 @@ var (
 	ErrAuthForbiden     = NewError(10100006, "auth forbiden")
 	ErrClientDeprecated = NewError(10100007, "this version of client is deprecated")
 	ErrRateLimit        = NewError(10100008, "server busy")
-	ErrInvalidSign      = NewError(10100009, "invliad signature")
+	ErrInvalidAppid     = NewError(10100009, "invliad appid")
+	ErrInvalidSign      = NewError(10100010, "invliad signature")
+	ErrUnmarshalReq     = NewError(10100011, "unmarshal request error")
 )

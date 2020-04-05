@@ -1,4 +1,4 @@
-package controller
+package biz
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,6 +6,7 @@ import (
 	"github.com/joyous-x/saturn/common/errors"
 	usercom "github.com/joyous-x/saturn/satellite/user"
 	usermod "github.com/joyous-x/saturn/satellite/user/model"
+	kerrs "krotas/errors"
 )
 
 type userLoginReq struct {
@@ -24,19 +25,19 @@ func UserLogin(c *gin.Context) {
 	req := userLoginReq{}
 	ctx, err := reqresp.RequestUnmarshal(c, nil, &req)
 	if err != nil {
-		reqresp.ResponseMarshal(c, -1, err.Error(), nil)
+		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, nil)
 		return
 	}
 
 	info, err := usercom.Login(ctx, req.Params)
 	if err != nil {
-		reqresp.ResponseMarshal(c, -1, err.Error(), nil)
+		reqresp.ResponseMarshal(c, errors.NewError(kerrs.ErrUserLogin.Code, err.Error()), nil)
 		return
 	}
 
 	resp := &userLoginResp{
 		User: info,
 	}
-	reqresp.ResponseMarshal(c, errors.OK.Code, errors.OK.Msg, resp)
+	reqresp.ResponseMarshal(c, errors.OK, resp)
 	return
 }

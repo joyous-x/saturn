@@ -14,6 +14,7 @@ import (
 	"github.com/joyous-x/saturn/dbs"
 	"krotas/config"
 	"krotas/wechat/biz"
+	kerrs "krotas/errors"
 	wxdao "krotas/wechat/dao"
 	"net/http"
 )
@@ -61,20 +62,20 @@ func wxMiniappLogin(c *gin.Context) {
 
 	ctx, err := reqresp.RequestUnmarshal(c, GetUserInfo, &req)
 	if err != nil {
-		reqresp.ResponseMarshal(c, -1, err.Error(), &resp)
+		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, &resp)
 		return
 	}
 
 	appInfo, ok := config.GlobalInst().CfgProj().WxApps[req.Common.AppId]
 	if !ok {
-		err = fmt.Errorf("invalid appname: %v", appInfo.AppName)
-		reqresp.ResponseMarshal(c, -1, err.Error(), &resp)
+		xlog.Error("wxMiniappLogin invalid appname: %v", appInfo.AppName)
+		reqresp.ResponseMarshal(c, errors.ErrInvalidAppid, &resp)
 		return
 	}
 
 	uuid, token, isNewUser, err := user.LoginByWxMiniApp(ctx, appInfo.AppID, appInfo.AppName, appInfo.AppSecret , req.JsCode, req.Inviter)
 	if err != nil {
-		reqresp.ResponseMarshal(c, -2, err.Error(), &resp)
+		reqresp.ResponseMarshal(c, errors.NewError(kerrs.ErrLoginByWxMiniApp.Code , err.Error()), &resp)
 		return
 	}
 	
@@ -86,7 +87,7 @@ func wxMiniappLogin(c *gin.Context) {
 	resp.UUID = uuid
 	resp.Token = token
 	resp.IsNewUser = isNewUser
-	reqresp.ResponseMarshal(c, errors.OK.Code, errors.OK.Msg, &resp)
+	reqresp.ResponseMarshal(c, errors.OK, &resp)
 	return
 }
 
@@ -95,37 +96,37 @@ func wxMiniappUpdateUser(c *gin.Context) {
 	req := wxMiniappUpdateUserReq{}
 	ctx, err := reqresp.RequestUnmarshal(c, GetUserInfo, &req)
 	if err != nil {
-		reqresp.ResponseMarshal(c, -1, err.Error(), nil)
+		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, nil)
 		return
 	}
 	_, exist := config.GlobalInst().CfgProj().WxApps[req.Common.AppId]
 	if !exist {
 		err = fmt.Errorf("invalid appid: %v", req.Common.AppId)
-		reqresp.ResponseMarshal(c, -1, err.Error(), nil)
+		reqresp.ResponseMarshal(c, errors.ErrInvalidAppid, nil)
 		return
 	}
 
 	wxUserInfo, err := user.UserDaoInst().GetUserInfoByUUID(ctx, req.Common.AppId, req.Common.Uid)
 	if err != nil {
 		xlog.Error("WxUpdateUserInfo GetUserInfoByUUID (%s %s) fail: %v", req.Common.AppId, req.Common.Uid, err)
-		reqresp.ResponseMarshal(c, -2, err.Error(), nil)
+		reqresp.ResponseMarshal(c, errors.NewError(kerrs.ErrGetUserInfo.Code, err.Error()), nil)
 	}
 
 	infos, err := miniapp.DecryptWxUserInfo(req.EncryptedData, req.Iv, wxUserInfo.SessionKey)
 	if err != nil {
 		xlog.Error("WxUpdateUserInfo DecryptWxUserInfo (%s %s) encrypted_data=%v fail: %v", req.Common.AppId, req.Common.Uid, req.EncryptedData, err)
-		reqresp.ResponseMarshal(c, -3, err.Error(), nil)
+		reqresp.ResponseMarshal(c, errors.NewError(kerrs.ErrDecryptUserInfo.Code, err.Error()), nil)
 	}
 
 	err = user.UserDaoInst().UpdateUserExtInfo(ctx, req.Common.AppId, req.Common.Uid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
 	if err != nil {
 		xlog.Error("WxUpdateUserInfo UpdateUserExtInfo (%s) fail: %v", req.Common.Uid, err)
-		reqresp.ResponseMarshal(c, -4, err.Error(), nil)
+		reqresp.ResponseMarshal(c, errors.NewError(kerrs.ErrUpdateUserInfo.Code, err.Error()), nil)
 	} else {
 		xlog.Debug("WxUpdateUserInfo appname=%v uuid=%v nickname=%v avatar=%v", req.Common.AppId, req.Common.Uid, infos.NickName, infos.AvatarURL)
 	}
 
-	reqresp.ResponseMarshal(c, errors.OK.Code, errors.OK.Msg, nil)
+	reqresp.ResponseMarshal(c, errors.OK, nil)
 	return
 }
 
@@ -134,25 +135,25 @@ func wxMiniappAccessToken(c *gin.Context) {
 	req := wxMiniappAccessTokenReq{}
 	_, err := reqresp.RequestUnmarshal(c, GetUserInfo, &req)
 	if err != nil {
-		reqresp.ResponseMarshal(c, -1, err.Error(), nil)
+		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, nil)
 		return
 	}
 	wxcfg, ok := config.GlobalInst().CfgProj().WxApps[req.Common.AppId]
 	if !ok {
-		err = fmt.Errorf("invalid appid: %v", req.Common.AppId)
-		reqresp.ResponseMarshal(c, -1, err.Error(), nil)
+		xlog.Error("wxMiniappAccessToken invalid appid: %v", req.Common.AppId)
+		reqresp.ResponseMarshal(c, errors.ErrInvalidAppid, nil)
 		return
 	}
 	token, err := wechat.GetAccessTokenWithCache(dbs.RedisInst().Conn("default"), wxcfg.AppID, wxcfg.AppSecret)
 	if err != nil {
-		reqresp.ResponseMarshal(c, -1, err.Error(), nil)
+		reqresp.ResponseMarshal(c, errors.NewError(kerrs.ErrGetAccessToken.Code, err.Error()), nil)
 		return
 	}
 	resp := &wxMiniappAccessTokenResp{
 		Appid: wxcfg.AppID,
 		Token: token,
 	}
-	reqresp.ResponseMarshal(c, errors.OK.Code, errors.OK.Msg, resp)
+	reqresp.ResponseMarshal(c, errors.OK, resp)
 	return
 }
 

@@ -1,4 +1,4 @@
-package controller
+package biz
 
 import (
 	"net/url"
@@ -8,11 +8,17 @@ import (
 	"github.com/joyous-x/saturn/common/reqresp"
 	"github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/satellite/ip2region"
+	kerrs "krotas/errors"
 )
+
+var prodMap map[string]string = map[string]string{
+	"appid_testA": "secret_testA", 
+}
 
 type Ip2RegionReq struct {
 	reqresp.ReqCommon
 	ClientIP    string `json:"client_ip"`
+	Debug       bool   `json:"debug"`
 }
 
 type Ip2RegionResp struct {
@@ -27,9 +33,8 @@ type Ip2RegionResp struct {
 }
 
 func checkAuth(appid, appSecret, signature string, req *Ip2RegionReq) (bool,error) {
-	values := url.Values{
-		//> TODO: req ---> values
-	}	
+	values := url.Values{}	
+	values.Add("client_ip", req.ClientIP)
 	okSignature := utils.MakeSign(appid, appSecret, values)
 	if signature != okSignature {
 		xlog.Error("checkAuth proid=%v uniqid=%v curSign=%v okSign=%v", appid, appSecret, signature, okSignature)
@@ -41,28 +46,37 @@ func checkAuth(appid, appSecret, signature string, req *Ip2RegionReq) (bool,erro
 func Ip2Region(c *gin.Context) {
 	req := Ip2RegionReq{}
 	resp := Ip2RegionResp{}
-	appSecret := "" //> TODO:
-
+	
 	_, err := reqresp.RequestUnmarshal(c, nil, &req)
 	if err != nil {
-		reqresp.ResponseMarshal(c, -1, err.Error(), &resp)
+		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, &resp)
 		return
 	}
 
-	signature := c.GetHeader("Authorization")
-	if signature == "" {
-		reqresp.ResponseMarshal(c, -1, "need sign", &resp)
-		return
-	}
-
-	if ok, err := checkAuth(req.Common.AppId, appSecret, signature, &req); !ok {
-		reqresp.ResponseMarshal(c, -2, err.Error(), &resp)
-		return
+	if !req.Debug {
+		appSecret := ""
+		if _, ok := prodMap[req.Common.AppId]; !ok {
+			reqresp.ResponseMarshal(c, errors.ErrInvalidAppid, &resp)
+			return 
+		} else {
+			appSecret = prodMap[req.Common.AppId]
+		}
+	
+		signature := c.GetHeader("Authorization")
+		if signature == "" {
+			reqresp.ResponseMarshal(c, errors.ErrAuthInvalid, &resp)
+			return
+		}
+	
+		if ok, _ := checkAuth(req.Common.AppId, appSecret, signature, &req); !ok {
+			reqresp.ResponseMarshal(c, errors.ErrAuthForbiden, &resp)
+			return
+		}
 	}
 
 	ipInfo, err := ip2region.Inst().MemorySearch(req.ClientIP)
 	if err != nil {
-		reqresp.ResponseMarshal(c, -3, err.Error(), &resp)
+		reqresp.ResponseMarshal(c, errors.NewError(kerrs.ErrIp2regionMemSearch.Code, err.Error()), &resp)
 		return
 	}
 	resp.ClientIP = req.ClientIP
@@ -72,5 +86,5 @@ func Ip2Region(c *gin.Context) {
 	resp.Province = ipInfo.Province
 	resp.ISP = ipInfo.ISP
 	resp.CityId = ipInfo.CityId
-	reqresp.ResponseMarshal(c, errors.OK.Code, errors.OK.Msg, nil)
+	reqresp.ResponseMarshal(c, errors.OK, &resp)
 }

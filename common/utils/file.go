@@ -111,7 +111,7 @@ func PathRelative2Bin(relative string) (string, error) {
 	return rst, nil
 }
 
-func GetExecPath() (string,error) {
+func GetExecDirPath() (string,error) {
 	file, err := exec.LookPath(os.Args[0])
 	if err != nil {
 		return "", err

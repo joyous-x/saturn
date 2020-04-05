@@ -9,6 +9,10 @@ import (
 
 var default_ginbox *GinBox
 
+type IGinBoxRouter interface {
+	HttpRouter(ginbox *GinBox) error
+}
+
 func init() {
 	default_ginbox = func(middleware ...gin.HandlerFunc) *GinBox {
 		return &GinBox{
@@ -82,6 +86,10 @@ func (this *GinBox) Handle(name, method, relativePath string, handlers ...gin.Ha
 		return nil
 	}
 	return v.Handle(method, relativePath, handlers...)
+}
+
+func (this *GinBox) HttpRouter(irouter IGinBoxRouter) error {
+	return irouter.HttpRouter(this)
 }
 
 // Run 启动并运行各个server
