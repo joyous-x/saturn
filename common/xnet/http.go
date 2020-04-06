@@ -1,4 +1,4 @@
-package utils
+package xnet
 
 import (
 	"bytes"

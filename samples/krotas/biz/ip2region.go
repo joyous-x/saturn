@@ -3,6 +3,7 @@ package biz
 import (
 	"net/url"
 	"github.com/gin-gonic/gin"
+	"github.com/joyous-x/saturn/common/xnet"
 	"github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/common/reqresp"
@@ -74,12 +75,17 @@ func Ip2Region(c *gin.Context) {
 		}
 	}
 
-	ipInfo, err := ip2region.Inst().MemorySearch(req.ClientIP)
+	clientIp := req.ClientIP
+	if len(clientIp) < 1 {
+		clientIp = new(xnet.HttpRealIP).RealIP(c.Request)
+	}
+
+	ipInfo, err := ip2region.Inst().MemorySearch(clientIp)
 	if err != nil {
 		reqresp.ResponseMarshal(c, errors.NewError(kerrs.ErrIp2regionMemSearch.Code, err.Error()), &resp)
 		return
 	}
-	resp.ClientIP = req.ClientIP
+	resp.ClientIP = clientIp
 	resp.Country = ipInfo.Country
 	resp.City = ipInfo.City
 	resp.Region = ipInfo.Region

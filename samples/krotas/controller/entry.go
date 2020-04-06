@@ -4,7 +4,7 @@ import (
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/utils"
-	"github.com/joyous-x/saturn/gins"
+	"github.com/joyous-x/saturn/common/gins"
 	"krotas/wechat"
 	"net/http"
 )

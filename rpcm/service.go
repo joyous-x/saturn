@@ -1,7 +1,7 @@
 package rpcm
 
 import (
-	"github.com/joyous-x/saturn/gins"
+	"github.com/joyous-x/saturn/common/gins"
 	"github.com/joyous-x/saturn/rpcm/base"
 	"strings"
 )

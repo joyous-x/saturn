@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/gins"
+	"github.com/joyous-x/saturn/common/gins"
 	"github.com/joyous-x/saturn/dbs"
 	
 	"krotas/config"

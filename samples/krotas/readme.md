@@ -11,11 +11,7 @@
     ```
     curl -XPOST 'http://localhost:8000/v1/user/login' -d '{}'
     ```
+- [x] static
+- [x] ip地域
 - 支付
-- kv
-- static
-- ip地域
-
-
----- 
-msg login 
+- [ ] kv
