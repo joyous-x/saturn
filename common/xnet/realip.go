@@ -24,7 +24,7 @@ import (
 
 
 type IRealIP interface {
-	IsPrivateIP(ip net.IP) bool
+	IsPrivateIP(ip string) bool
 	RealIP(r *http.Request) string 
 	ClientIP(r *http.Request) string 
 	ClientPublicIP(r *http.Request) string 
@@ -44,7 +44,7 @@ func (m *HttpRealIP) RealIP(r *http.Request) string {
 
 // IsPrivateIP check the ip address whether priviate or not
 func (m *HttpRealIP) IsPrivateIP(ip string) bool {
-	return m.isPrivateIP(net.ParseIP(ip))
+	return IsPrivateIp(ip)
 }
 
 // RemoteIP get remote ip from http.Request
@@ -91,25 +91,4 @@ func (m *HttpRealIP) ClientPublicIP(r *http.Request) string {
 		return remoteIp
 	}
 	return ""
-}
-
-// IsPrivateIP 
-//     tcp/ip协议中，专门保留了三个IP地址区域作为私有地址，其地址范围如下：
-//         10.0.0.0/8：10.0.0.0～10.255.255.255
-//         172.16.0.0/12：172.16.0.0～172.31.255.255
-//         192.168.0.0/16：192.168.0.0～192.168.255.255
-func (m *HttpRealIP) isPrivateIP(ip net.IP) bool {
-	if ip.IsLoopback() {
-		return true
-	}
-
-	ip4 := ip.To4() 
-	if nil == ip4 {
-		return false
-	}
-
-	return ip4[0] == 10 ||                                 // 10.0.0.0/8
-		(ip4[0] == 172 && ip4[1] >= 16 && ip4[1] <= 31) || // 172.16.0.0/12
-		(ip4[0] == 169 && ip4[1] == 254) || // 169.254.0.0/16
-		(ip4[0] == 192 && ip4[1] == 168)    // 192.168.0.0/16
 }

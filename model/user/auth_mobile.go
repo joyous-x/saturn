@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	"github.com/joyous-x/saturn/satellite/user/model"
+	"github.com/joyous-x/saturn/model/user/model"
 )
 
 func loginByMobile(context.Context, *LoginParams) (*model.UserInfo, error) {

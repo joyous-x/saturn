@@ -2,6 +2,8 @@ module github.com/joyous-x/saturn
 
 go 1.12
 
+replace github.com/joyous-x/saturn => ../saturn
+
 require (
 	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect
 	github.com/gin-contrib/cors v1.3.0
@@ -14,11 +16,10 @@ require (
 	github.com/hashicorp/consul/api v1.3.0
 	github.com/jhump/protoreflect v1.6.0
 	github.com/jinzhu/gorm v1.9.11
+	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/uber/jaeger-client-go v2.21.1+incompatible
 	github.com/uber/jaeger-lib v2.2.0+incompatible // indirect
-	golang.org/x/lint v0.0.0-20190313153728-d0100b6bd8b3 // indirect
-	golang.org/x/tools v0.0.0-20190524140312-2c0ae7006135 // indirect
+	go.uber.org/zap v1.10.0
 	google.golang.org/grpc v1.26.0
-	honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc // indirect
 )

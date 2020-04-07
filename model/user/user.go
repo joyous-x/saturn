@@ -3,8 +3,8 @@ package user
 import (
 	"context"
 	"encoding/json"
-	"github.com/joyous-x/saturn/satellite/user/model"
-	"github.com/joyous-x/saturn/satellite/user/errors"
+	"github.com/joyous-x/saturn/model/user/model"
+	"github.com/joyous-x/saturn/model/user/errors"
 )
 
 const (

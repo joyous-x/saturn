@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/reqresp"
 	"github.com/joyous-x/saturn/common/errors"
-	usercom "github.com/joyous-x/saturn/satellite/user"
-	usermod "github.com/joyous-x/saturn/satellite/user/model"
+	usercom "github.com/joyous-x/saturn/model/user"
+	usermod "github.com/joyous-x/saturn/model/user/model"
 	kerrs "krotas/errors"
 )
 

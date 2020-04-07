@@ -8,7 +8,7 @@ import (
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/common/reqresp"
 	"github.com/joyous-x/saturn/common/errors"
-	"github.com/joyous-x/saturn/satellite/ip2region"
+	"github.com/joyous-x/saturn/model/ip2region"
 	kerrs "krotas/errors"
 )
 
