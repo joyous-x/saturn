@@ -2,8 +2,8 @@ package dbs
 
 import (
 	"github.com/joyous-x/saturn/common/xlog"
-	"sync"
 	"os"
+	"sync"
 )
 
 //-----------------------------------------

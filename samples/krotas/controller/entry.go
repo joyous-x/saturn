@@ -3,14 +3,14 @@ package controller
 import (
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/common/gins"
+	"github.com/joyous-x/saturn/common/utils"
 	"krotas/wechat"
 	"net/http"
 )
 
 func New() *Controller {
-	return &Controller{} 
+	return &Controller{}
 }
 
 type Controller struct {

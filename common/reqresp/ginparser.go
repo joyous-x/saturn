@@ -1,4 +1,4 @@
-package reqresp 
+package reqresp
 
 import (
 	"context"
@@ -8,10 +8,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/common/utils"
-	
+	"github.com/joyous-x/saturn/common/xlog"
+
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -57,7 +57,7 @@ func requestUnmarshal(c *gin.Context, fnAuthUser FnAuthUser, data IRequest) (ctx
 	if nil != fnAuthUser {
 		sessToken, err = fnAuthUser(appid, uid, c.GetHeader("Authorization"), requestRawPacket)
 		if err != nil {
-			return 
+			return
 		}
 	}
 

@@ -1,4 +1,4 @@
-package xnet 
+package xnet
 
 import (
 	"net"
@@ -22,33 +22,34 @@ import (
 //         X-Real-IP: client_proxy_A (注意：会在请求经过 client_proxy_B 时被设置为 client_proxy_A 的地址)
 //         remote_addr: client_proxy_B (or client_proxy_B_PublicIP 如果client_proxy_B为client内网代理时)
 
-
+// IRealIP interface for ip options
 type IRealIP interface {
 	IsPrivateIP(ip string) bool
-	RealIP(r *http.Request) string 
-	ClientIP(r *http.Request) string 
-	ClientPublicIP(r *http.Request) string 
+	RealIP(r *http.Request) string
+	ClientIP(r *http.Request) string
+	ClientPublicIP(r *http.Request) string
 }
 
-type HttpRealIP struct {
+// HTTPRealIP implemention of the interface IRealIP
+type HTTPRealIP struct {
 }
 
 // RealIP try to get the client's public address ip, if not, get the private one
-func (m *HttpRealIP) RealIP(r *http.Request) string {
-	realIp := m.ClientPublicIP(r)
-	if realIp == ""{
-		realIp = m.ClientIP(r)
+func (m *HTTPRealIP) RealIP(r *http.Request) string {
+	realIP := m.ClientPublicIP(r)
+	if realIP == "" {
+		realIP = m.ClientIP(r)
 	}
-	return realIp
+	return realIP
 }
 
 // IsPrivateIP check the ip address whether priviate or not
-func (m *HttpRealIP) IsPrivateIP(ip string) bool {
+func (m *HTTPRealIP) IsPrivateIP(ip string) bool {
 	return IsPrivateIp(ip)
 }
 
 // RemoteIP get remote ip from http.Request
-func (m *HttpRealIP) RemoteIP(r *http.Request) string {
+func (m *HTTPRealIP) RemoteIP(r *http.Request) string {
 	remoteIP := ""
 	if ip, _, err := net.SplitHostPort(strings.TrimSpace(r.RemoteAddr)); err == nil {
 		remoteIP = ip
@@ -57,7 +58,7 @@ func (m *HttpRealIP) RemoteIP(r *http.Request) string {
 }
 
 // ClientIP get client ip
-func (m *HttpRealIP) ClientIP(r *http.Request) string {
+func (m *HTTPRealIP) ClientIP(r *http.Request) string {
 	xForwardedFor := r.Header.Get("X-Forwarded-For")
 	ip := strings.TrimSpace(strings.Split(xForwardedFor, ",")[0])
 	if ip != "" {
@@ -74,7 +75,7 @@ func (m *HttpRealIP) ClientIP(r *http.Request) string {
 }
 
 // ClientPublicIP get client's public ip addr
-func (m *HttpRealIP) ClientPublicIP(r *http.Request) string {
+func (m *HTTPRealIP) ClientPublicIP(r *http.Request) string {
 	xForwardedFor := r.Header.Get("X-Forwarded-For")
 	for _, tmpIP := range strings.Split(xForwardedFor, ",") {
 		tmpIP = strings.TrimSpace(tmpIP)
@@ -82,13 +83,13 @@ func (m *HttpRealIP) ClientPublicIP(r *http.Request) string {
 			return tmpIP
 		}
 	}
-	xRealIp := strings.TrimSpace(r.Header.Get("X-Real-Ip"))
-	if xRealIp != "" && !m.IsPrivateIP(xRealIp) {
-		return xRealIp
+	xRealIP := strings.TrimSpace(r.Header.Get("X-Real-Ip"))
+	if xRealIP != "" && !m.IsPrivateIP(xRealIP) {
+		return xRealIP
 	}
-	remoteIp, _, err := net.SplitHostPort(strings.TrimSpace(r.RemoteAddr))
-	if err == nil && m.IsPrivateIP(remoteIp) {
-		return remoteIp
+	remoteIP, _, err := net.SplitHostPort(strings.TrimSpace(r.RemoteAddr))
+	if err == nil && m.IsPrivateIP(remoteIP) {
+		return remoteIP
 	}
 	return ""
 }

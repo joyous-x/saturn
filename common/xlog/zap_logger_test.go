@@ -1,9 +1,9 @@
 package xlog
 
 import (
-	"time"
-	"testing"
 	"strings"
+	"testing"
+	"time"
 )
 
 func Test_ZapWrite(t *testing.T) {
@@ -14,8 +14,8 @@ func Test_ZapWrite(t *testing.T) {
 	AsyncZapWriteJson(strJsonB)
 
 	data := map[string]interface{}{
-		"uuid": "test-uuid",
-		"os": "test-os",
+		"uuid":   "test-uuid",
+		"os":     "test-os",
 		"subids": strings.Join([]string{"a", "b", "c"}, ","),
 	}
 	AsyncZapWriteMap(data)

@@ -1,17 +1,17 @@
 package idcard_cn
 
 import (
-	"time"
 	"fmt"
 	"math"
-	"strings"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type IDParser struct {
 	id, localCode, year, month, day, seriesCode, checkCode string
-	version Version
-	tzBeijing *time.Location
+	version                                                Version
+	tzBeijing                                              *time.Location
 }
 
 func (s *IDParser) Init(uniqueIDCode string, doCheck bool) error {
@@ -35,7 +35,7 @@ func (s *IDParser) init(idVersion Version, uniqueID, localCode, year, month, day
 		s.year = year
 	}
 	s.month = month
-	s.day = day 
+	s.day = day
 	s.id = uniqueID
 	s.localCode = localCode
 	s.seriesCode = seriesCode
@@ -83,18 +83,18 @@ func (s *IDParser) GetVersion() Version {
 }
 
 func (s *IDParser) GetGender() Gender {
-	gender, err := strconv.Atoi(string(s.seriesCode[len(s.seriesCode) - 1]))
+	gender, err := strconv.Atoi(string(s.seriesCode[len(s.seriesCode)-1]))
 	if err != nil {
 		return Gender(0)
 	}
-	return Gender(uint8(gender) % 2 + 1)
+	return Gender(uint8(gender)%2 + 1)
 }
 
 func (s *IDParser) GetCity() (string, error) {
 	if city, ok := cityMap[s.localCode]; ok {
 		return city, nil
 	}
-	return "", fmt.Errorf("invalid city code") 
+	return "", fmt.Errorf("invalid city code")
 }
 
 func (s *IDParser) GetProvince() (string, error) {
@@ -118,7 +118,7 @@ func (s *IDParser) getAge() (int, error) {
 	}
 	now := time.Now()
 	offset := int8(0)
-	if now.Sub(time.Date(now.Year(), 0, 0, 0, 0, 0, 0, time.Local)) - birthday.Sub(time.Date(birthday.Year(), 0, 0, 0, 0, 0, 0, s.tzBeijing)) < 0 {
+	if now.Sub(time.Date(now.Year(), 0, 0, 0, 0, 0, 0, time.Local))-birthday.Sub(time.Date(birthday.Year(), 0, 0, 0, 0, 0, 0, s.tzBeijing)) < 0 {
 		offset = -1
 	}
 	age := now.Year() - birthday.Year() + int(offset)

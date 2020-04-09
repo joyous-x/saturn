@@ -1,11 +1,11 @@
 package utils
 
 import (
-	"fmt"
 	"crypto/md5"
+	"fmt"
+	"github.com/joyous-x/saturn/common/xlog"
 	"net/url"
 	"sort"
-	"github.com/joyous-x/saturn/common/xlog"
 )
 
 // MakeSign 将key按字典序排列后拼接keyvalue最后再添加appSecret值，形成的字符串计算md5

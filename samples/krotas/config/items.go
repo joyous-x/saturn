@@ -1,9 +1,9 @@
 package config
 
 import (
+	"github.com/joyous-x/saturn/common/gins"
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/dbs"
-	"github.com/joyous-x/saturn/common/gins"
 )
 
 const (

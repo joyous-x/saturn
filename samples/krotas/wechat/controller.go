@@ -7,14 +7,14 @@ import (
 	"github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/common/reqresp"
 	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/dbs"
 	"github.com/joyous-x/saturn/model/user"
 	"github.com/joyous-x/saturn/model/wechat"
 	"github.com/joyous-x/saturn/model/wechat/miniapp"
 	"github.com/joyous-x/saturn/model/wechat/pubacc"
-	"github.com/joyous-x/saturn/dbs"
 	"krotas/config"
-	"krotas/wechat/biz"
 	kerrs "krotas/errors"
+	"krotas/wechat/biz"
 	wxdao "krotas/wechat/dao"
 	"net/http"
 )
@@ -73,12 +73,12 @@ func wxMiniappLogin(c *gin.Context) {
 		return
 	}
 
-	uuid, token, isNewUser, err := user.LoginByWxMiniApp(ctx, appInfo.AppID, appInfo.AppName, appInfo.AppSecret , req.JsCode, req.Inviter)
+	uuid, token, isNewUser, err := user.LoginByWxMiniApp(ctx, appInfo.AppID, appInfo.AppName, appInfo.AppSecret, req.JsCode, req.Inviter)
 	if err != nil {
-		reqresp.ResponseMarshal(c, errors.NewError(kerrs.ErrLoginByWxMiniApp.Code , err.Error()), &resp)
+		reqresp.ResponseMarshal(c, errors.NewError(kerrs.ErrLoginByWxMiniApp.Code, err.Error()), &resp)
 		return
 	}
-	
+
 	err = wxdao.PutWxToken(appInfo.AppID, uuid, token)
 	if err != nil {
 		xlog.Error("wxMiniappLogin PutWxToken appid=%v uuid=%v err=%v", appInfo.AppID, uuid, err)

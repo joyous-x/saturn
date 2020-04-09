@@ -1,8 +1,8 @@
 package user
 
 import (
-	"github.com/joyous-x/saturn/model/user/model"
 	"github.com/jinzhu/gorm"
+	"github.com/joyous-x/saturn/model/user/model"
 	"sync"
 )
 

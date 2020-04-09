@@ -1,14 +1,14 @@
 package user
 
 import (
-	"fmt"
 	"context"
-	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/model/wechat"
-	"github.com/joyous-x/saturn/model/wechat/miniapp"
+	"fmt"
 	guuid "github.com/google/uuid"
 	comerrors "github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/common/utils"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/model/wechat"
+	"github.com/joyous-x/saturn/model/wechat/miniapp"
 	"hash/crc64"
 	"strconv"
 	"strings"

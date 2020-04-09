@@ -3,8 +3,8 @@ package user
 import (
 	"context"
 	"encoding/json"
-	"github.com/joyous-x/saturn/model/user/model"
 	"github.com/joyous-x/saturn/model/user/errors"
+	"github.com/joyous-x/saturn/model/user/model"
 )
 
 const (
@@ -16,19 +16,14 @@ const (
 )
 
 type LoginParams struct {
-	InviterUid    string               `json:"inviter_uid"`
-	InviteScene   string               `json:"invite_scene"`
-	InvitePayload json.RawMessage      `json:"invite_payload,omitempty"`
-	Platform      string               `json:"platform"`
-	LoginType     string               `json:"login_type"` // 登录方式
-	WX            LoginWxParams        `json:"wx"`         // 微信登录
-	QQ            LoginQQParams        `json:"qq"`         // QQ登录
-	Mobile        LoginMobileParams    `json:"mobile"`     // 手机登录
-	WxMini        LoginWxMiniAppParams `json:"wx_miniapp"` // 微信小程序
-}
-
-type LoginWxMiniAppParams struct {
-	JsCode string `json:"jscode" yaml:"jscode"`
+	InviterUid    string            `json:"inviter_uid"`
+	InviteScene   string            `json:"invite_scene"`
+	InvitePayload json.RawMessage   `json:"invite_payload,omitempty"`
+	Platform      string            `json:"platform"`
+	LoginType     string            `json:"login_type"` // 登录方式
+	WX            LoginWxParams     `json:"wx"`         // 微信登录
+	QQ            LoginQQParams     `json:"qq"`         // QQ登录
+	Mobile        LoginMobileParams `json:"mobile"`     // 手机登录
 }
 
 type LoginWxParams struct {
@@ -51,13 +46,10 @@ func Login(ctx context.Context, req *LoginParams) (*model.UserInfo, error) {
 	switch req.LoginType {
 	case LoginTypeQQ:
 		userInfo, err = loginByQQ(ctx, req)
-	case LoginTypeWxH5:
-	case LoginTypeWxApp:
+	case LoginTypeWxH5, LoginTypeWxApp:
 		userInfo, err = loginByWX(ctx, req)
 	case LoginTypeMobile:
 		userInfo, err = loginByMobile(ctx, req)
-	case LoginTypeWxMiniApp:
-		// TODO: LoginByWxMiniApp
 	default:
 		userInfo, err = nil, errors.ErrBadRequest
 	}

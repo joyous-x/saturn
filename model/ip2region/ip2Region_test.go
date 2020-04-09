@@ -9,7 +9,7 @@ func BenchmarkBtreeSearch(B *testing.B) {
 	if err != nil {
 		B.Error(err)
 	}
-	for i:=0;i<B.N;i++{
+	for i := 0; i < B.N; i++ {
 		region.BtreeSearch("127.0.0.1")
 	}
 
@@ -20,7 +20,7 @@ func BenchmarkMemorySearch(B *testing.B) {
 	if err != nil {
 		B.Error(err)
 	}
-	for i:=0;i<B.N;i++{
+	for i := 0; i < B.N; i++ {
 		region.MemorySearch("127.0.0.1")
 	}
 
@@ -31,7 +31,7 @@ func BenchmarkBinarySearch(B *testing.B) {
 	if err != nil {
 		B.Error(err)
 	}
-	for i:=0;i<B.N;i++{
+	for i := 0; i < B.N; i++ {
 		region.BinarySearch("127.0.0.1")
 	}
 

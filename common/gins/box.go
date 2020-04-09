@@ -50,7 +50,7 @@ func (this *GinBox) Init(configs []*ServerConfig, middleware ...gin.HandlerFunc)
 			this.servers[v.Name] = s
 		}
 	}
-	
+
 	return nil
 }
 

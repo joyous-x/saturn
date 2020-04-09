@@ -41,10 +41,10 @@ func AsyncZapWriteMap(data map[string]interface{}) {
 ////////////////////////////////////////////////////////
 
 type ZapWriter struct {
-	logger *zap.Logger
-	bufferJson chan string
-	bufferMap  chan map[string]interface{}
-	quit   chan os.Signal
+	logger      *zap.Logger
+	bufferJson  chan string
+	bufferMap   chan map[string]interface{}
+	quit        chan os.Signal
 	probability int
 }
 

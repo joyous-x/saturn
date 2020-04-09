@@ -10,8 +10,8 @@ type ReqCommonData struct {
 }
 
 type RespCommonData struct {
-	Ret               int    `json:"ret"`
-	Msg               string `json:"msg"`
+	Ret       int    `json:"ret"`
+	Msg       string `json:"msg"`
 	RequestId string `json:"request_id,omitempty"`
 	Timestamp int64  `json:"timestamp"`
 	RetryMS   int32  `json:"retry_ms"`
@@ -44,4 +44,3 @@ func (r *ReqCommon) GetCommon() *ReqCommonData {
 func (r *RespCommon) GetCommon() *RespCommonData {
 	return &r.Common
 }
-

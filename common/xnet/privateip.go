@@ -1,8 +1,8 @@
-package xnet 
+package xnet
 
 import (
-	"net"
 	"fmt"
+	"net"
 )
 
 var privateCIDRs []*net.IPNet = privateCIDRs2IPNet()
@@ -25,17 +25,17 @@ func privateCIDRs2IPNet() []*net.IPNet {
 		}
 		ipnets = append(ipnets, ipnet)
 	}
-	return ipnets	
+	return ipnets
 }
 
-// isPrivateIP 比较高效的 private ip 判断
-func IsPrivateIp(ip string) bool {
+// IsPrivateIP 比较高效的 private ip 判断
+func IsPrivateIP(ip string) bool {
 	return isPrivateIP(net.ParseIP(ip))
 }
 
-// isPrivateIPEx 判断是否是 private ip
-func IsPrivateIpEx(ip string) bool {
-	return isPrivateIPEx(net.ParseIP(ip))
+// IsPrivateIPEx 判断是否是 private ip
+func IsPrivateIPEx(ip string) bool {
+	return IsPrivateIPEx(net.ParseIP(ip))
 }
 
 func isPrivateIP(ip net.IP) bool {
@@ -43,15 +43,15 @@ func isPrivateIP(ip net.IP) bool {
 		return true
 	}
 
-	ip4 := ip.To4() 
+	ip4 := ip.To4()
 	if nil == ip4 {
 		return false
 	}
 
-	return ip4[0] == 10 ||                                 // 10.0.0.0/8
+	return ip4[0] == 10 || // 10.0.0.0/8
 		(ip4[0] == 172 && ip4[1] >= 16 && ip4[1] <= 31) || // 172.16.0.0/12
 		(ip4[0] == 169 && ip4[1] == 254) || // 169.254.0.0/16
-		(ip4[0] == 192 && ip4[1] == 168)    // 192.168.0.0/16
+		(ip4[0] == 192 && ip4[1] == 168) // 192.168.0.0/16
 }
 
 func isPrivateIPEx(ip net.IP) bool {
@@ -62,4 +62,3 @@ func isPrivateIPEx(ip net.IP) bool {
 	}
 	return false
 }
-

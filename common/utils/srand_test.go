@@ -1,11 +1,11 @@
 package utils
 
 import (
-	"testing"
-	"sync"
-	"math"
 	"errors"
 	"fmt"
+	"math"
+	"sync"
+	"testing"
 )
 
 const (

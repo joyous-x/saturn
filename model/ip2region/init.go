@@ -1,22 +1,22 @@
 package ip2region
 
 import (
-	"sync"
 	"fmt"
-	"path/filepath"
 	"github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/common/xlog"
+	"path/filepath"
+	"sync"
 )
 
 //
-// Ip2region： 
+// Ip2region：
 //     https://github.com/lionsoul2014/ip2region
 //
 
 var (
-	defaultIp2Region       *Ip2Region
-	onceIp2Region         = new(sync.Once)
-	defaultDbPath         = ""
+	defaultIp2Region *Ip2Region
+	onceIp2Region    = new(sync.Once)
+	defaultDbPath    = ""
 )
 
 // Init 如果有初始化需求可以在这里定义

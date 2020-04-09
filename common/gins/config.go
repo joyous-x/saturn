@@ -2,8 +2,8 @@ package gins
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/common/gins/middleware"
+	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/rpcm/base"
 )
 

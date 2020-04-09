@@ -3,18 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/common/gins"
+	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/dbs"
-	
-	"krotas/config"
-	"krotas/model"
-	"krotas/controller"
+
 	"krotas/biz"
+	"krotas/config"
+	"krotas/controller"
+	"krotas/model"
 )
 
 const (
-	env = "local"
+	env             = "local"
 	mysqlKeyMinipro = "minipro"
 )
 
@@ -39,7 +39,7 @@ func main() {
 	configPath := flag.String("config", "./env/config/local", "config path")
 	flag.Parse()
 
-	// load configs 
+	// load configs
 	cfgMgr := config.InitGlobalInst(*configPath)
 	if cfgMgr == nil {
 		panic(fmt.Errorf("invalid config mgr"))

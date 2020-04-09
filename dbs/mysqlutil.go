@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"time"
 	"github.com/jinzhu/gorm"
+	"time"
 )
 
 func initMySQL(user, passwd, host, dbname string, maxIdle, maxActive int, connMaxLife time.Duration) (*sql.DB, error) {
@@ -26,7 +26,6 @@ func initMySQL(user, passwd, host, dbname string, maxIdle, maxActive int, connMa
 	}
 	return mysqldb, nil
 }
-
 
 func initMySQLorm(user, passwd, host, dbname string, maxIdle, maxActive int, connMaxLife time.Duration) (*gorm.DB, error) {
 	// data source name : username:password@protocol(address)/dbname?param=value
