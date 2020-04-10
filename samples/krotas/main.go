@@ -36,7 +36,7 @@ func initComponents() {
 func main() {
 	xlog.Debug("gins sample ===> start ")
 
-	configPath := flag.String("config", "./env/config/local", "config path")
+	configPath := flag.String("config", "./config/local", "config path")
 	flag.Parse()
 
 	// load configs

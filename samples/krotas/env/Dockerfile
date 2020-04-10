@@ -8,4 +8,4 @@ ADD ./ /data/apps/krotas/
 EXPOSE 8000
 EXPOSE 8001
 
-CMD [ "/data/apps/krotas/krotas" ]
+CMD [ "/data/apps/krotas/krotas", "-config", "/data/apps/krotas/config"]

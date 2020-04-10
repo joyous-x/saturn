@@ -1,5 +1,5 @@
 redis:
-  host: 172.27.0.9:63791
+  host: redis:6379
   passwd: {redis_passwd}
   exts:
     maxIdle: 32
@@ -15,9 +15,19 @@ mysql:
   -
     key: default
     type: mysql
-    host: 172.27.0.9:33061
+    host: mysql:3306
     user: {mysql_user}
-    dbname: miniprogram
+    dbname: apps
+    passwd: {mysql_passwd}
+    debug: false
+    exts:
+      maxIdle: 10
+  -
+    key: minipro
+    type: mysqlorm
+    host: mysql:3306
+    user: {mysql_user}
+    dbname: apps
     passwd: {mysql_passwd}
     debug: false
     exts:

@@ -54,21 +54,23 @@ build:
 config:
 	@echo "===> $@ : target=$(TARGET) workspace=$(WORKSPACE)"
 	if [ "$(ENV)" != "" ]; then \
-		rm -rf $(buildDir)/config && mkdir -p $(buildDir)/config; \
+		rm -rf $(buildDir)/config && mkdir -p $(buildDir)/config/ip2region; \
 		cp -rf $(WORKSPACE)/env/config/$(ENV)/* $(buildDir)/config; \
+		cp -rf $(WORKSPACE)/env/ip2region/* $(buildDir)/config/ip2region/; \
 	fi
 	if [ ! -d "$(buildDir)/config" ]; then \
 		echo "===> dir not exist: $(buildDir)/config" && \
 		exit ;\
+	fi
+	if [ "$(ENV)" = "dev" ]; then \
+		$(WORKSPACE)/env/config/config_table.handler.sh -f $(buildDir)/config/dbs.yaml -p $(WORKSPACE)/env/config/config_table.$(ENV).yaml; \
+		$(WORKSPACE)/env/config/config_table.handler.sh -f $(buildDir)/config/proj.yaml -p $(WORKSPACE)/env/config/config_table.$(ENV).yaml; \
 	fi
 	cp -rf $(WORKSPACE)/env/crts $(buildDir)/crts;
 	cp -rf $(WORKSPACE)/env/nginx.conf $(buildDir)/nginx.conf;
 	cp -rf $(WORKSPACE)/env/Dockerfile $(buildDir)/Dockerfile;
 	cp -rf $(WORKSPACE)/env/docker-compose.biz.yaml $(buildDir)/docker-compose.biz.yaml;
 	cp -rf $(WORKSPACE)/env/docker-compose.env.yaml $(buildDir)/docker-compose.env.yaml;
-	if [ "$(ENV)" = "dev" ]; then \
-		@echo "this is dev"; \
-	fi
 	@echo "===> $@ : complete"
 
 rsc_path=$(abspath $(WORKSPACE)/env/rsc)

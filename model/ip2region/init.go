@@ -36,7 +36,7 @@ func defaultIp2RegionInst(dbPath string) *Ip2Region {
 			if err != nil {
 				panic(fmt.Sprintf("defaultIp2RegionInst getExecPath error %v", err))
 			}
-			dbFilePath = filepath.Join(execDirPath, "env/config/ip2region/ip2region.db")
+			dbFilePath = filepath.Join(execDirPath, "config/ip2region/ip2region.db")
 		}
 		tmpIp2Region, err := New(dbFilePath)
 		if err == nil {

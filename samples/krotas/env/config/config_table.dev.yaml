@@ -1,0 +1,14 @@
+# mysql config
+mysql_user: joyousx
+mysql_passwd: 123.456
+mysql_passwd_root: enceladus
+# redis config
+redis_passwd: 123.456
+# wx miniprogram wowoo
+wowoo_app_id: 
+wowoo_app_secret: 
+# wx public account
+pubacc_app_id: 
+pubacc_app_secret: 
+pubacc_app_aeskey: 
+pubacc_app_token: 
