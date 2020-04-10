@@ -1,0 +1,21 @@
+httpserver:
+- 
+  key: default
+  port: 8000
+  certFile: ""
+  keyFile: ""
+- 
+  key: inner
+  port: 8001
+  certFile: ""
+  keyFile: ""
+
+wxminiapp:
+  wowoo:
+    app_id: {wowoo_app_id}
+    app_secret: {wowoo_app_secret}
+  pubacc:
+    app_id: {pubacc_app_id}
+    app_secret: {pubacc_app_secret}
+    app_aeskey: {pubacc_app_aeskey}
+    token: {pubacc_app_token}

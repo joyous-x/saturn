@@ -1,0 +1,24 @@
+redis:
+  host: 172.27.0.9:63791
+  passwd: {redis_passwd}
+  exts:
+    maxIdle: 32
+    idleTimeout: 240s
+    connTimeout: 5s
+    maxConnLifetime: 0s
+    testOnBorrow: PING
+  dbs:
+    - 
+      key: default
+      db: 0
+mysql:
+  -
+    key: default
+    type: mysql
+    host: 172.27.0.9:33061
+    user: {mysql_user}
+    dbname: miniprogram
+    passwd: {mysql_passwd}
+    debug: false
+    exts:
+      maxIdle: 10

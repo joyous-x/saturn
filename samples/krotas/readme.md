@@ -18,3 +18,8 @@
         ```
 - 支付
 
+
+
+## Note
+- GO111MODULE=off 时，build项目：
+    + 项目的 main.go 需要放在 src 下的第二级目录, 就是说: src/main.go 不行, src/ceggs/main.go 即可

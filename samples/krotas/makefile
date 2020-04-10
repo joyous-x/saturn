@@ -8,7 +8,7 @@ ifneq ($(ws), )
 WORKSPACE=$(abspath $(ws))
 endif
 
-TARGET=$(shell echo $(src) | rev | cut -d "/" -f1 | rev)
+TARGET=$(shell echo $(abspath $(WORKSPACE)) | rev | cut -d "/" -f1 | rev)
 ifneq ($(target), ) 
 TARGET:=$(target)
 endif 
@@ -66,6 +66,9 @@ config:
 	cp -rf $(WORKSPACE)/env/Dockerfile $(buildDir)/Dockerfile;
 	cp -rf $(WORKSPACE)/env/docker-compose.biz.yaml $(buildDir)/docker-compose.biz.yaml;
 	cp -rf $(WORKSPACE)/env/docker-compose.env.yaml $(buildDir)/docker-compose.env.yaml;
+	if [ "$(ENV)" = "dev" ]; then \
+		@echo "this is dev"; \
+	fi
 	@echo "===> $@ : complete"
 
 rsc_path=$(abspath $(WORKSPACE)/env/rsc)
