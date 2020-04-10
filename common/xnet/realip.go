@@ -45,7 +45,7 @@ func (m *HTTPRealIP) RealIP(r *http.Request) string {
 
 // IsPrivateIP check the ip address whether priviate or not
 func (m *HTTPRealIP) IsPrivateIP(ip string) bool {
-	return IsPrivateIp(ip)
+	return IsPrivateIP(ip)
 }
 
 // RemoteIP get remote ip from http.Request

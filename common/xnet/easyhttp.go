@@ -25,6 +25,11 @@ type EasyHTTP struct {
 	options HTTPOptions
 }
 
+// NewEasyHTTP construct a new EasyHTTP
+func NewEasyHTTP() *EasyHTTP {
+	return &EasyHTTP{}
+}
+
 // Options return a new EasyHTTP with options in  input
 func (s *EasyHTTP) Options(options *HTTPOptions) *EasyHTTP {
 	tmp := &EasyHTTP{}
@@ -65,7 +70,7 @@ func (s *EasyHTTP) PostJSON(url string, data interface{}) ([]byte, error) {
 	return s.httpPostBase(url, body, "application/json", s.options)
 }
 
-func (s *EasyHTTP) httpPostBase(url string, body io.Reader, contentType, options HTTPOptions) ([]byte, error) {
+func (s *EasyHTTP) httpPostBase(url string, body io.Reader, contentType string, options HTTPOptions) ([]byte, error) {
 	httpClient := &http.Client{
 		Timeout: options.ConnTimeout,
 	}

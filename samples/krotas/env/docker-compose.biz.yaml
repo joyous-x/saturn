@@ -1,0 +1,14 @@
+version: '3'
+services:
+  krotas:
+    external_links:
+      # container_name:ALIAS
+      - redis.5:redis
+      - mysql.5.7:mysql
+    restart: always
+    build: 
+      context: ../bin/
+      dockerfile: Dockerfile
+    ports:
+      - '8000:8000'
+      - '8001:8001'

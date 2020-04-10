@@ -35,7 +35,7 @@ func IsPrivateIP(ip string) bool {
 
 // IsPrivateIPEx 判断是否是 private ip
 func IsPrivateIPEx(ip string) bool {
-	return IsPrivateIPEx(net.ParseIP(ip))
+	return isPrivateIPEx(net.ParseIP(ip))
 }
 
 func isPrivateIP(ip net.IP) bool {

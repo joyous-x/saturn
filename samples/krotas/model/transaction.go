@@ -16,6 +16,5 @@ func Transaction(ctx context.Context, db *sql.DB, opt *sql.TxOptions, fn func(tx
 	if err != nil {
 		return err
 	}
-
 	return tx.Commit()
 }

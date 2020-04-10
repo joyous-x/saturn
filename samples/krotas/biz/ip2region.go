@@ -75,17 +75,17 @@ func Ip2Region(c *gin.Context) {
 		}
 	}
 
-	clientIp := req.ClientIP
-	if len(clientIp) < 1 {
-		clientIp = new(xnet.HttpRealIP).RealIP(c.Request)
+	clientIP := req.ClientIP
+	if len(clientIP) < 1 {
+		clientIP = new(xnet.HTTPRealIP).RealIP(c.Request)
 	}
 
-	ipInfo, err := ip2region.Inst().MemorySearch(clientIp)
+	ipInfo, err := ip2region.Inst().MemorySearch(clientIP)
 	if err != nil {
 		reqresp.ResponseMarshal(c, errors.NewError(kerrs.ErrIp2regionMemSearch.Code, err.Error()), &resp)
 		return
 	}
-	resp.ClientIP = clientIp
+	resp.ClientIP = clientIP
 	resp.Country = ipInfo.Country
 	resp.City = ipInfo.City
 	resp.Region = ipInfo.Region
