@@ -3,13 +3,15 @@ package utils
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/joyous-x/saturn/common/xlog"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"github.com/joyous-x/saturn/common/xlog"
 )
 
+// FileMd5 make md5 for the file
 func FileMd5(path string) string {
 	f, err := os.Open(path)
 	if err != nil {
@@ -60,7 +62,7 @@ func MoveFile(src string, dst string) int {
 		xlog.Error("MoveFile error: %v", err)
 		return -1
 	}
-	if !IsFileExist(dst) {
+	if !IsPathExist(dst) {
 		return -1
 	}
 	return 0
@@ -75,20 +77,29 @@ func RemoveFile(path string) int {
 	return 0
 }
 
-func IsFileExist(path string) bool {
+// IsPathExist check whether the path is exist or not
+func IsPathExist(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false
 	}
 	return true
 }
 
-func MakeParentDir(file string) bool {
-	dir := filepath.Dir(file)
-	err := os.MkdirAll(dir, 0644)
-	if nil != err {
-		return false
+// MakeParentDir 生成指定路径的上级目录
+//               如: /foo/bar/baz.js   会确保 /foo/bar 存在
+//                   /foo/bar/baz      会确保 /foo/bar 存在
+//                   /foo/bar/baz/     会确保 /foo/bar/baz 存在
+func MakeParentDir(path string) (bool, error) {
+	dir := filepath.Dir(path)
+	if ok := IsPathExist(dir); ok {
+		return true, nil
 	}
-	return true
+
+	err := os.MkdirAll(dir, 0755)
+	if nil != err {
+		return false, err
+	}
+	return true, nil
 }
 
 func IsDir(path string) bool {

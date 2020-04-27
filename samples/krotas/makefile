@@ -34,7 +34,7 @@ GO_LDFLAGS+= -extldflags -static
 
 buildDir=$(WORKSPACE)/bin
 
-all: clean config resource build 
+all: clean config rsc web build 
 
 build:
 	@echo "===> $@ : target=$(TARGET) workspace=$(WORKSPACE)"
@@ -74,13 +74,24 @@ config:
 	@echo "===> $@ : complete"
 
 rsc_path=$(abspath $(WORKSPACE)/env/rsc)
-resource:
+rsc:
 	@echo "===> $@ : ready : rsc_path=$(rsc_path)"
 	if [ ! -d "$(rsc_path)" ]; then \
 		echo "!!! error : $(rsc_path) not exists, please git clone https://github.com/joyous-x/Solar firstly"; \
 	else \
 		rm -rf $(buildDir)/$@ && mkdir -p $(buildDir)/$@; \
 		cp -rf $(rsc_path)/* $(buildDir)/$@; \
+	fi
+	@echo "===> $@ : complete"
+
+web_path=$(abspath $(WORKSPACE)/env/web)
+web:
+	@echo "===> $@ : ready : web_path=$(web_path)"
+	if [ ! -d "$(web_path)" ]; then \
+		echo "!!! error : $(web_path) not exists"; \
+	else \
+		rm -rf $(buildDir)/$@ && mkdir -p $(buildDir)/$@; \
+		cp -rf $(web_path)/* $(buildDir)/$@; \
 	fi
 	@echo "===> $@ : complete"
 

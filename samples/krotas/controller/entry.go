@@ -1,23 +1,27 @@
 package controller
 
 import (
+	"krotas/wechat"
+	"net/http"
+	"path/filepath"
+
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/gins"
 	"github.com/joyous-x/saturn/common/utils"
-	"krotas/wechat"
-	"net/http"
 )
 
+// New create a new Controller
 func New() *Controller {
 	return &Controller{}
 }
 
+// Controller defination for Controller
 type Controller struct {
 }
 
-func (ctr *Controller) HttpRouter(ginbox *gins.GinBox) error {
-	ginbox.Server().Engine().GET("/", func(c *gin.Context) { c.String(http.StatusOK, "Welcome to Saturn"); return })
+// HTTPRouter router for http server
+func (ctr *Controller) HTTPRouter(ginbox *gins.GinBox) error {
 	ginbox.Server().Engine().POST("/v1/version", ctr.version)
 	ginbox.Handle("inner", "POST", "/v1/version", ctr.version)
 
@@ -45,11 +49,20 @@ func (ctr *Controller) version(c *gin.Context) {
 	c.JSON(http.StatusOK, datas)
 }
 
-func (ctr *Controller) httpRouterStatic(r gin.IRouter) error {
-	rscPath, err := utils.PathRelative2Bin("./env/rsc/")
+func (ctr *Controller) httpRouterStatic(r *gin.Engine) error {
+	exePath, err := utils.GetExecDirPath()
 	if err != nil {
-		return err
+		panic(err.Error())
 	}
-	r.Use(static.Serve("/rsc", static.LocalFile(rscPath, false)))
+
+	r.LoadHTMLGlob(filepath.Join(exePath, "web/templates/*"))
+	r.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"title": "hello world",
+		})
+	})
+	r.StaticFile("/favicon.ico", filepath.Join(exePath, "web/assert/favicon.ico"))
+	r.Use(static.Serve("/web", static.LocalFile(filepath.Join(exePath, "web"), true)))
+	r.Use(static.Serve("/rsc", static.LocalFile(filepath.Join(exePath, "rsc"), false)))
 	return nil
 }

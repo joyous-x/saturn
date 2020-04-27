@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+
 	"github.com/joyous-x/saturn/common/gins"
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/dbs"
@@ -59,7 +60,7 @@ func main() {
 	}
 
 	// regist routers
-	ginbox.HttpRouter(controller.New())
+	ginbox.HTTPRouter(controller.New())
 	ginbox.Run()
 
 	xlog.Debug("gins sample ===> end ")

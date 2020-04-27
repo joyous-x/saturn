@@ -2,28 +2,30 @@ package gins
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/xlog"
-	"sync"
 )
 
-var default_ginbox *GinBox
+var defaultGinbox *GinBox
 
+// IGinBoxRouter interface for gins's router
 type IGinBoxRouter interface {
-	HttpRouter(ginbox *GinBox) error
+	HTTPRouter(ginbox *GinBox) error
 }
 
 func init() {
-	default_ginbox = func(middleware ...gin.HandlerFunc) *GinBox {
+	defaultGinbox = func(middleware ...gin.HandlerFunc) *GinBox {
 		return &GinBox{
 			middlewares: middleware,
 		}
 	}(DefaultMiddlewares...)
 }
 
-// Default 默认的全局GinServerBox对象
+// DefaultBox 默认的全局GinServerBox对象
 func DefaultBox() *GinBox {
-	return default_ginbox
+	return defaultGinbox
 }
 
 // GinBox GinBox 对象
@@ -32,22 +34,22 @@ type GinBox struct {
 	servers     map[string]*GinServer
 }
 
-// InitDefault 初始化默认的全局GinServerBox对象
-func (this *GinBox) Init(configs []*ServerConfig, middleware ...gin.HandlerFunc) error {
-	this.servers = make(map[string]*GinServer, 0)
-	this.middlewares = append(this.middlewares, middleware...)
+// Init 初始化默认的全局GinServerBox对象
+func (g *GinBox) Init(configs []*ServerConfig, middleware ...gin.HandlerFunc) error {
+	g.servers = make(map[string]*GinServer, 0)
+	g.middlewares = append(g.middlewares, middleware...)
 	for i, v := range configs {
 		if len(v.Name) == 0 {
-			v.Name = default_server_name
+			v.Name = defaultServerName
 		}
 		if v.Port == 0 {
-			v.Port = default_server_port
+			v.Port = defaultServerPort
 		}
-		s, err := this.newServer(v, this.middlewares...)
+		s, err := g.newServer(v, g.middlewares...)
 		if err != nil {
 			xlog.Panic("InitServers pos:%v, name:%v, port:%v, err:%v", i, v.Name, v.Port, err)
 		} else {
-			this.servers[v.Name] = s
+			g.servers[v.Name] = s
 		}
 	}
 
@@ -55,58 +57,59 @@ func (this *GinBox) Init(configs []*ServerConfig, middleware ...gin.HandlerFunc)
 }
 
 // Server 获取name指定的配置相关联的gin.Engine
-// note: when len(names) == 0, return server named default_server_name
-func (this *GinBox) Server(names ...string) *GinServer {
-	if nil == this.servers {
+// note: when len(names) == 0, return server named defaultServerName
+func (g *GinBox) Server(names ...string) *GinServer {
+	if nil == g.servers {
 		return nil
 	}
-	name := default_server_name
+	name := defaultServerName
 	if len(names) > 0 {
 		name = names[0]
 	}
-	if _, ok := this.servers[name]; !ok {
+	if _, ok := g.servers[name]; !ok {
 		return nil
 	}
-	return this.servers[name]
+	return g.servers[name]
 }
 
 // newServer 根据参数生成一个gin.Engine
-func (this *GinBox) newServer(conf *ServerConfig, middleware ...gin.HandlerFunc) (*GinServer, error) {
+func (g *GinBox) newServer(conf *ServerConfig, middleware ...gin.HandlerFunc) (*GinServer, error) {
 	server := NewGinServer()
 	return server, server.Init(conf, middleware...)
 }
 
 // Handle 根据参数处理server的route相关
-func (this *GinBox) Handle(name, method, relativePath string, handlers ...gin.HandlerFunc) error {
+func (g *GinBox) Handle(name, method, relativePath string, handlers ...gin.HandlerFunc) error {
 	if len(name) == 0 {
-		name = default_server_name
+		name = defaultServerName
 	}
-	v, ok := this.servers[name]
+	v, ok := g.servers[name]
 	if !ok {
 		return nil
 	}
 	return v.Handle(method, relativePath, handlers...)
 }
 
-func (this *GinBox) HttpRouter(irouter IGinBoxRouter) error {
-	return irouter.HttpRouter(this)
+// HTTPRouter regist a http router
+func (g *GinBox) HTTPRouter(irouter IGinBoxRouter) error {
+	return irouter.HTTPRouter(g)
 }
 
 // Run 启动并运行各个server
 // 此函数会阻塞，直到各个server退出
-func (this *GinBox) Run() error {
-	if this.servers == nil || len(this.servers) < 1 {
+func (g *GinBox) Run() error {
+	if g.servers == nil || len(g.servers) < 1 {
 		xlog.Error("GinBox Run error: invalid servers")
 		return fmt.Errorf("no servers")
 	}
 
 	var waitGroup sync.WaitGroup
-	for i, _ := range this.servers {
+	for i := range g.servers {
 		waitGroup.Add(1)
 		index := i
 		go func() {
 			defer waitGroup.Done()
-			this.servers[index].Run()
+			g.servers[index].Run()
 		}()
 	}
 
@@ -116,14 +119,14 @@ func (this *GinBox) Run() error {
 
 // Stop 停止各个server
 // 通常会等待各个server完全响应终止信号
-func (this *GinBox) Stop() error {
-	if this.servers == nil || len(this.servers) < 1 {
+func (g *GinBox) Stop() error {
+	if g.servers == nil || len(g.servers) < 1 {
 		return nil
 	}
-	for k, s := range this.servers {
+	for k, s := range g.servers {
 		s.Stop()
 		xlog.Info("http server has stopped: %v", k)
 	}
-	this.servers = nil
+	g.servers = nil
 	return nil
 }

@@ -3,12 +3,13 @@ package gins
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/joyous-x/saturn/common/xlog"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joyous-x/saturn/common/xlog"
 )
 
 // GinServer GinServer 对象
@@ -30,13 +31,13 @@ func NewGinServer(middleware ...gin.HandlerFunc) *GinServer {
 	return tmp
 }
 
-// Server 获取指定配置相关联的gin.Engine
-func (this *GinServer) Engine() *gin.Engine {
-	return this.engine
+// Engine 获取指定配置相关联的gin.Engine
+func (g *GinServer) Engine() *gin.Engine {
+	return g.engine
 }
 
-// InitServer 根据参数生成一个gin.Engine
-func (this *GinServer) Init(conf *ServerConfig, middleware ...gin.HandlerFunc) error {
+// Init 根据参数生成一个gin.Engine
+func (g *GinServer) Init(conf *ServerConfig, middleware ...gin.HandlerFunc) error {
 	name, port, certFile, keyFile, debug := conf.Name, conf.Port, conf.CertFile, conf.KeyFile, conf.Debug
 
 	gin.DisableConsoleColor()
@@ -46,30 +47,30 @@ func (this *GinServer) Init(conf *ServerConfig, middleware ...gin.HandlerFunc) e
 	}
 
 	if len(name) == 0 {
-		name = default_server_name
+		name = defaultServerName
 	}
 	if port == 0 {
-		port = default_server_port
+		port = defaultServerPort
 	}
 
 	router := gin.New()
-	router.Use(this.middlewares...)
+	router.Use(g.middlewares...)
 	router.Use(middleware...)
-	this.engine = router
-	this.Name = name
-	this.Port = port
-	this.CertFile = certFile
-	this.KeyFile = keyFile
-	this.middlewares = append(this.middlewares, middleware...)
+	g.engine = router
+	g.Name = name
+	g.Port = port
+	g.CertFile = certFile
+	g.KeyFile = keyFile
+	g.middlewares = append(g.middlewares, middleware...)
 
 	return nil
 }
 
 // Handle 根据参数处理server的route相关
-func (this *GinServer) Handle(method, relativePath string, handlers ...gin.HandlerFunc) error {
+func (g *GinServer) Handle(method, relativePath string, handlers ...gin.HandlerFunc) error {
 	var err error
-	if this.engine != nil {
-		iRoutes := this.engine.Handle(method, relativePath, handlers...)
+	if g.engine != nil {
+		iRoutes := g.engine.Handle(method, relativePath, handlers...)
 		if iRoutes != nil {
 			return nil
 		} else {
@@ -81,10 +82,10 @@ func (this *GinServer) Handle(method, relativePath string, handlers ...gin.Handl
 	return err
 }
 
-// Handle 根据参数处理server的route相关
-func (this *GinServer) Route(method, relativePath string, routes ...interface{}) error {
+// Route 根据参数处理server的route相关
+func (g *GinServer) Route(method, relativePath string, routes ...interface{}) error {
 	var err error
-	if this.engine != nil {
+	if g.engine != nil {
 		handlers := make([]gin.HandlerFunc, len(routes))
 		for i, r := range routes {
 			if f, ok := r.(gin.HandlerFunc); ok {
@@ -95,7 +96,7 @@ func (this *GinServer) Route(method, relativePath string, routes ...interface{})
 				xlog.Panic("route handler error(invalid handler) %v %v", method, relativePath)
 			}
 		}
-		iRoutes := this.engine.Handle(method, relativePath, handlers...)
+		iRoutes := g.engine.Handle(method, relativePath, handlers...)
 		if iRoutes != nil {
 			return nil
 		} else {
@@ -109,19 +110,19 @@ func (this *GinServer) Route(method, relativePath string, routes ...interface{})
 
 // Run 启动并运行server
 // 此函数会阻塞，直到server退出
-func (this *GinServer) Run() error {
-	err := this.runServer()
+func (g *GinServer) Run() error {
+	err := g.runServer()
 	if err != nil {
 		return err
 	}
 
-	defer this.Stop()
+	defer g.Stop()
 	signOSInter := make(chan os.Signal, 1)
 	signal.Notify(signOSInter, os.Interrupt)
 WAIT:
 	select {
 	case <-signOSInter:
-	case <-this.signStop:
+	case <-g.signStop:
 	default:
 		goto WAIT
 	}
@@ -129,16 +130,16 @@ WAIT:
 	return nil
 }
 
-func (this *GinServer) runServer() error {
+func (g *GinServer) runServer() error {
 	httpSvr := &http.Server{
-		Addr:    fmt.Sprintf(":%v", this.Port),
-		Handler: this.engine,
+		Addr:    fmt.Sprintf(":%v", g.Port),
+		Handler: g.engine,
 	}
-	this.httpsvr = httpSvr
-	this.signStop = make(chan int, 1)
+	g.httpsvr = httpSvr
+	g.signStop = make(chan int, 1)
 
-	name, addr := this.Name, httpSvr.Addr
-	certFile, keyFile := this.CertFile, this.KeyFile
+	name, addr := g.Name, httpSvr.Addr
+	certFile, keyFile := g.CertFile, g.KeyFile
 
 	go func() {
 		if len(certFile) > 0 && len(keyFile) > 0 {
@@ -154,7 +155,7 @@ func (this *GinServer) runServer() error {
 			}
 		}
 		xlog.Debug("GinServer:%s(%s) ListenAndServe stopped", name, addr)
-		this.signStop <- 1
+		g.signStop <- 1
 	}()
 
 	xlog.Info("GinServer:%s(%s) running", name, addr)
@@ -162,23 +163,23 @@ func (this *GinServer) runServer() error {
 }
 
 // Stop 停止server, 通常会等待server完全响应终止信号
-func (this *GinServer) Stop() error {
-	if this.httpsvr == nil {
+func (g *GinServer) Stop() error {
+	if g.httpsvr == nil {
 		return nil
 	}
-	err := this.stopServer(5 * time.Second)
+	err := g.stopServer(5 * time.Second)
 	if err != nil {
 		return err
 	}
-	<-this.signStop
-	this.engine = nil
+	<-g.signStop
+	g.engine = nil
 	return nil
 }
 
-func (this *GinServer) stopServer(timeout time.Duration) error {
+func (g *GinServer) stopServer(timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	err := this.httpsvr.Shutdown(ctx)
+	err := g.httpsvr.Shutdown(ctx)
 	if err != nil {
 		// Error from closing listeners, or context timeout:
 		xlog.Warn("http server Shutdown: %v", err)
