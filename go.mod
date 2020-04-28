@@ -5,6 +5,7 @@ go 1.12
 replace github.com/joyous-x/saturn => ../saturn
 
 require (
+	github.com/alicebob/miniredis/v2 v2.11.4
 	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.5.0
@@ -18,8 +19,12 @@ require (
 	github.com/jinzhu/gorm v1.9.11
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/opentracing/opentracing-go v1.1.0
+	github.com/robfig/cron/v3 v3.0.1
+	github.com/stretchr/testify v1.4.0
 	github.com/uber/jaeger-client-go v2.21.1+incompatible
 	github.com/uber/jaeger-lib v2.2.0+incompatible // indirect
 	go.uber.org/zap v1.10.0
 	google.golang.org/grpc v1.26.0
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
+	gopkg.in/redis.v5 v5.2.9
 )

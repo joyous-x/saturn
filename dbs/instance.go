@@ -1,48 +1,72 @@
 package dbs
 
 import (
-	"github.com/joyous-x/saturn/common/xlog"
 	"os"
 	"sync"
+
+	"github.com/joyous-x/saturn/common/xlog"
 )
 
 //-----------------------------------------
 
-var g_mySqls *MySqls
-var g_mysqls_once sync.Once
+var gMySqls *MySqls
+var gMysqlsOnce sync.Once
 
+// MysqlInst ...
 func MysqlInst(mysqlConfs ...MysqlConf) *MySqls {
 	if len(mysqlConfs) > 0 {
-		g_mysqls_once.Do(func() {
+		gMysqlsOnce.Do(func() {
 			mysqlConfItems := mysqlConfs
 			obj := &MySqls{}
 			if err := obj.Init(mysqlConfItems); err != nil {
 				xlog.Error("init MySqls err:%v", err)
 			} else {
-				g_mySqls = obj
+				gMySqls = obj
 				xlog.Info("===> MysqlInst(%v) init ok ", os.Args[0])
 			}
 		})
 	}
-	return g_mySqls
+	return gMySqls
 }
 
 //-----------------------------------------
-var g_redisPools *RedisPools
-var g_redis_once sync.Once
+var gRedisPools *RedisPools
+var gRedisPoolsOnce sync.Once
 
+// RedisInst ...
 func RedisInst(redisConfs ...RedisConf) *RedisPools {
 	if len(redisConfs) > 0 {
-		g_redis_once.Do(func() {
+		gRedisPoolsOnce.Do(func() {
 			redisConfData := redisConfs[0]
 			redisPools := &RedisPools{}
 			if err := redisPools.Init(&redisConfData); err != nil {
 				xlog.Error("init redispools err:%v", err)
 			} else {
-				g_redisPools = redisPools
+				gRedisPools = redisPools
 				xlog.Info("===> RedisInst(%v) init ok ", os.Args[0])
 			}
 		})
 	}
-	return g_redisPools
+	return gRedisPools
+}
+
+//-----------------------------------------
+var gRedisClients *RedisClients
+var gRedisClientsOnce sync.Once
+
+// RedisInstEx ...
+func RedisInstEx(redisConfs ...RedisConf) *RedisClients {
+	if len(redisConfs) > 0 {
+		gRedisClientsOnce.Do(func() {
+			redisConfData := redisConfs[0]
+			redisClients := &RedisClients{}
+			if err := redisClients.Init(&redisConfData); err != nil {
+				xlog.Error("init redisClients err:%v", err)
+			} else {
+				gRedisClients = redisClients
+				xlog.Info("===> RedisInstEx(%v) init ok ", os.Args[0])
+			}
+		})
+	}
+	return gRedisClients
 }
