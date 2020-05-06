@@ -1,7 +1,5 @@
 (function(){
-
-    $('.-tools').parallax({imageSrc: './web/asset/img/tools.jpg'});
-    $('.-blog').parallax({imageSrc: './web/asset/img/blog.jpg'});
+    $('.-about').parallax({imageSrc: './web/asset/img/about-x.jpg', zIndex: -1});
 
     $('.root').fullpage({
         easingcss3: 'cubic-bezier(0.770, 0.000, 0.175, 1.000)',
@@ -20,16 +18,17 @@
     var $navLinks = $('.main-nav a');
     var sections = $('[data-anchor]').map(function(){
         return $(this).attr('data-anchor');
-    }).slice(1, -1).toArray()
+    }).toArray()
 
     $(window).on('hashchange', function(){
         var hash = window.location.hash;
         $navLinks.removeClass('-active');
 
-        if (sections.indexOf(hash.slice(1)) !== -1) {
-            $navLinks.eq(0).addClass('-active');
+        var index = sections.indexOf(hash.slice(1));
+        if (index !== -1) {
+            $navLinks.eq(index).addClass('-active');
         } else if (hash == '#about') {
-            $navLinks.eq(1).addClass('-active');
+            $navLinks.eq(-2).addClass('-active');
         }
     }).trigger('hashchange')
 }())

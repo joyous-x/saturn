@@ -13,6 +13,7 @@ import (
 )
 
 // Crontab the warpper for cron.Cron, we can use it simply
+//         TODO: if job doesn't complete timely, there will be a lot of go routines. We can do something for this.
 type Crontab struct {
 	cron        *cron.Cron
 	redisClient *redis.Client
@@ -45,12 +46,23 @@ func (c *Crontab) Cron() *cron.Cron {
 // AddFuncOneInstance add function which only run in an (vm) environment when triggered
 //                if lockSec <= 0, we will set lockSec to default value: 60
 func (c *Crontab) AddFuncOneInstance(spec string, lockSec int, cmd func()) (cron.EntryID, error) {
-	return c.cron.AddFunc(spec, c.OneInstanceCmd(spec, lockSec, cmd))
+	if c.redisClient == nil {
+		return cron.EntryID(0), fmt.Errorf("create locker error")
+	}
+	newCmd, err := c.OneInstanceCmd(spec, lockSec, cmd)
+	if err != nil {
+		return cron.EntryID(0), nil
+	}
+	return c.cron.AddFunc(spec, newCmd)
 }
 
 // OneInstanceCmd construct a new cmd which only run in an (vm) environment when triggered
 //                if lockSec <= 0, we will set lockSec to default value: 60
-func (c *Crontab) OneInstanceCmd(name string, lockSec int, cmd func()) func() {
+//                if some errors happened, it will return nil
+func (c *Crontab) OneInstanceCmd(name string, lockSec int, cmd func()) (func(), error) {
+	if c.redisClient == nil {
+		return nil, fmt.Errorf("create locker error")
+	}
 	cmdName := runtime.FuncForPC(reflect.ValueOf(cmd).Pointer()).Name()
 	if lockSec <= 0 {
 		lockSec = 60
@@ -62,7 +74,12 @@ func (c *Crontab) OneInstanceCmd(name string, lockSec int, cmd func()) func() {
 		}
 		cmd()
 	}
-	return newCmd
+	return newCmd, nil
+}
+
+// NewChain warpper of cron.NewChain
+func (c *Crontab) NewChain(w ...cron.JobWrapper) cron.Chain {
+	return cron.NewChain(w...)
 }
 
 func (c *Crontab) tryLock(key, value string, lockSec int) (bool, error) {

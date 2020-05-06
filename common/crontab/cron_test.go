@@ -1,6 +1,7 @@
 package crontab
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -64,4 +65,44 @@ func Test_Crontab(t *testing.T) {
 	assert.Equal(t, cntB, 5, "assert for AddFuncOneInstance")
 
 	miniRedis.FastForward(time.Second * 3600)
+}
+
+type JobInst struct {
+	Msg string
+	Cnt int
+}
+
+func (j *JobInst) Run() {
+	j.Cnt = j.Cnt + 1
+	fmt.Printf("current msg is : %v, counter=%v \n", j.Msg, j.Cnt)
+}
+
+func (j *JobInst) Incr() {
+	j.Cnt = j.Cnt + 1
+}
+
+func PreJobRun(p *JobInst) cron.JobWrapper {
+	return func(j cron.Job) cron.Job {
+		return cron.FuncJob(func() {
+			fmt.Printf("will run some job ---> \n")
+			p.Incr()
+			j.Run()
+		})
+	}
+}
+
+func Test_CronChain(t *testing.T) {
+	instCron := &Crontab{}
+	instCron.Init(nil, cron.WithSeconds())
+
+	_, err := instCron.OneInstanceCmd("", 1, nil)
+	assert.NotNil(t, err, "assert for OneInstanceCmd")
+
+	jobInst := &JobInst{Msg: "test for chain"}
+	jobTmp := instCron.NewChain(PreJobRun(jobInst)).Then(jobInst)
+	instCron.Cron().AddJob("* * * * * *", jobTmp)
+
+	instCron.Start()
+	time.Sleep(time.Second * 3)
+	assert.Equal(t, jobInst.Cnt, 6, "assert for NewChain")
 }

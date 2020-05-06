@@ -10,6 +10,5 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/jinzhu/gorm v1.9.11
 	github.com/joyous-x/saturn v0.0.0-00010101000000-000000000000
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.2.2
 )
