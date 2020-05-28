@@ -18,6 +18,7 @@ ifneq ($(env), )
 ENV:=$(env)
 endif 
 
+
 GOPATH=$(abspath $(WORKSPACE)/..)
 GO=go
 GO_OS ?= $(shell go env GOOS)
@@ -31,10 +32,15 @@ GO_LDFLAGS+= -X internal/common/version.Ver=${CI_COMMIT_TAG}
 GO_LDFLAGS+= -X internal/common/version.GitVersion=$(GIT_COMMIT)
 GO_LDFLAGS+= -extldflags -static
 
-
 buildDir=$(WORKSPACE)/bin
 
-all: clean config rsc web build 
+all: before clean config rsc web build after
+
+before:
+	@echo "======> ready to exec: ws=$(WORKSPACE) target=$(TARGET) env=$(ENV)" 
+
+after:
+	@echo "======> make finish: ws=$(WORKSPACE) target=$(TARGET) env=$(ENV)" 
 
 build:
 	@echo "===> $@ : target=$(TARGET) workspace=$(WORKSPACE)"

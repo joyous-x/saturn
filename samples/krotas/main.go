@@ -6,12 +6,11 @@ import (
 
 	"github.com/joyous-x/saturn/common/gins"
 	"github.com/joyous-x/saturn/common/xlog"
-	"github.com/joyous-x/saturn/dbs"
 
-	"krotas/biz"
-	"krotas/config"
+	"krotas/bizs"
+	"krotas/common/config"
+	"krotas/common/model"
 	"krotas/controller"
-	"krotas/model"
 )
 
 const (
@@ -25,13 +24,8 @@ func initComponents() {
 		panic(err)
 	}
 
-	dbOrm, err := dbs.MysqlInst().DBOrm(mysqlKeyMinipro)
-	if err != nil {
-		panic("init database fail")
-	}
-
 	// initialize components
-	biz.InitSatellates(dbOrm)
+	bizs.Init()
 }
 
 func main() {
@@ -51,17 +45,11 @@ func main() {
 
 	// make ginbox
 	ginbox := gins.DefaultBox()
-	err := ginbox.Init(cfgMgr.CfgProj().HttpConfs)
-	if err != nil {
-		xlog.Debug(" ===> ginbox init err: %v ", err)
-		return
-	} else {
+	if err := ginbox.Init(cfgMgr.CfgProj().HttpConfs); err == nil {
 		xlog.Debug(" ===> ginbox init success ")
+		ginbox.HTTPRouter(controller.New())
+		ginbox.Run()
 	}
-
-	// regist routers
-	ginbox.HTTPRouter(controller.New())
-	ginbox.Run()
 
 	xlog.Debug("gins sample ===> end ")
 }

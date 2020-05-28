@@ -3,9 +3,10 @@ package dbs
 import (
 	"database/sql"
 	"fmt"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"github.com/joyous-x/saturn/common/xlog"
-	"time"
 	// "github.com/jmoiron/sqlx"
 )
 
@@ -21,7 +22,7 @@ func (this *MySqls) Init(dbs []MysqlConf) error {
 			connMaxLife, err := time.ParseDuration(_db.Exts.MaxConnLife)
 			if err != nil {
 				xlog.Error("Init ParseDuration failed, key: %v, err: %v", _db.Key, err)
-				panic(err)
+				return err
 			}
 			connMaxLifeTime = connMaxLife
 		}
@@ -30,19 +31,19 @@ func (this *MySqls) Init(dbs []MysqlConf) error {
 			m, err := initMySQL(_db.User, _db.Passwd, _db.Host, _db.DbName, _db.Exts.MaxIdle, _db.Exts.MaxOpen, connMaxLifeTime)
 			if err != nil {
 				xlog.Error("initMySQL failed, key: %v, err: %v", _db.Key, err)
-				panic(err)
+				return err
 			}
 			this.dbConns[_db.Key] = m
 		} else if _db.Type == "mysqlorm" {
 			m, err := initMySQLorm(_db.User, _db.Passwd, _db.Host, _db.DbName, _db.Exts.MaxIdle, _db.Exts.MaxOpen, connMaxLifeTime)
 			if err != nil {
 				xlog.Error("initMySQLorm failed, key: %v, err: %v", _db.Key, err)
-				panic(err)
+				return err
 			}
 			this.dbConns[_db.Key] = m
 		} else {
 			xlog.Error("Init MySQL error: invalid type: %v, key: %v", _db.Type, _db.Key)
-			panic(fmt.Errorf("invalid key"))
+			return fmt.Errorf("invalid key")
 		}
 	}
 	return nil

@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"krotas/wechat"
+	"krotas/bizs/wechat"
 	"net/http"
 	"path/filepath"
 

@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package com.mesh_demo.protoc;
+
+enum C2S_Cmds {
+    None                        = 0;
+    Entry_Insert                = 100100001;
+    Entry_Sum                   = 100100003;
+    Entry_Max                   = 100100005;
+
+    Middle_InsertDecorator      = 100200001;
+
+    Model_Insert                = 100300001;
+    Model_Sum                   = 100300003;
+    Model_Max                   = 100300005;
+    Model_Len                   = 100300007;
+}
+
+service Gate {
+}
+
+service Entry {
+    rpc Insert(InsertReq) returns(InsertResp);
+    rpc Sum(SumReq) returns(SumResp);
+    rpc Max(MaxReq) returns(MaxResp);
+}
+
+service Middle {
+    rpc InsertDecorator(InsertReq) returns(InsertResp);
+}
+
+service Model {
+    rpc Insert(InsertReq) returns(InsertResp);
+    rpc Sum(SumReq) returns(SumResp);
+    rpc Max(MaxReq) returns(MaxResp);
+    rpc Len(LenReq) returns(LenResp);
+}
+
+message InsertReq {
+    int32 val = 1;
+}
+message InsertResp {
+    int32 len = 1;
+    repeated int32 data = 2;
+}
+
+message SumReq {}
+message SumResp {
+    int32 sum = 1;
+}
+
+message MaxReq {}
+message MaxResp {
+    int32 max = 1;
+}
+
+message LenReq {}
+message LenResp {
+    int32 len = 1;
+    repeated int32 data = 2;
+}

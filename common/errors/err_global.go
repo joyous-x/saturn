@@ -20,4 +20,5 @@ var (
 	ErrInvalidAppid     = NewError(10100009, "invliad appid")
 	ErrInvalidSign      = NewError(10100010, "invliad signature")
 	ErrUnmarshalReq     = NewError(10100011, "unmarshal request error")
+	ErrInvalidParam     = NewError(10100012, "invliad param")
 )

@@ -3,9 +3,10 @@ package dbs
 import (
 	"database/sql"
 	"fmt"
+	"time"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-	"time"
 )
 
 func initMySQL(user, passwd, host, dbname string, maxIdle, maxActive int, connMaxLife time.Duration) (*sql.DB, error) {
@@ -22,7 +23,7 @@ func initMySQL(user, passwd, host, dbname string, maxIdle, maxActive int, connMa
 
 	err = mysqldb.Ping()
 	if err != nil {
-		panic(err)
+		return mysqldb, err
 	}
 	return mysqldb, nil
 }
@@ -41,7 +42,7 @@ func initMySQLorm(user, passwd, host, dbname string, maxIdle, maxActive int, con
 
 	err = mysqlorm.DB().Ping()
 	if err != nil {
-		panic(err)
+		return mysqlorm, err
 	}
 
 	return mysqlorm, nil
