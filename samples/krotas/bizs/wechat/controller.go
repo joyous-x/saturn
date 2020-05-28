@@ -14,10 +14,10 @@ import (
 	"github.com/joyous-x/saturn/common/reqresp"
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/dbs"
-	"github.com/joyous-x/saturn/model/user"
-	"github.com/joyous-x/saturn/model/wechat"
-	"github.com/joyous-x/saturn/model/wechat/miniapp"
-	"github.com/joyous-x/saturn/model/wechat/pubacc"
+	"github.com/joyous-x/saturn/foos/user"
+	"github.com/joyous-x/saturn/foos/wechat"
+	"github.com/joyous-x/saturn/foos/wechat/miniapp"
+	"github.com/joyous-x/saturn/foos/wechat/pubacc"
 )
 
 type wxMiniappLoginReq struct {

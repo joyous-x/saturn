@@ -10,7 +10,7 @@ import (
 	"github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/common/xlog"
 	"github.com/joyous-x/saturn/common/xnet"
-	"github.com/joyous-x/saturn/model/ip2region"
+	"github.com/joyous-x/saturn/foos/ip2region"
 )
 
 var prodMap map[string]string = map[string]string{

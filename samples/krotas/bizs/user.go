@@ -6,16 +6,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/common/reqresp"
-	usercom "github.com/joyous-x/saturn/model/user"
-	usermod "github.com/joyous-x/saturn/model/user/model"
+	usercom "github.com/joyous-x/saturn/foos/user"
+	usermod "github.com/joyous-x/saturn/foos/user/model"
 )
 
-type userLoginReq struct {
+// UserLoginReq login request
+type UserLoginReq struct {
 	reqresp.ReqCommon
 	Params *usercom.LoginParams `json:"params"`
 }
 
-type userLoginResp struct {
+// UserLoginResp login request
+type UserLoginResp struct {
 	reqresp.RespCommon
 	User *usermod.UserInfo `json:"user"`
 }
@@ -23,7 +25,7 @@ type userLoginResp struct {
 // UserLogin user login via phone and third account
 // such as wechat, qq, and so on
 func UserLogin(c *gin.Context) {
-	req := userLoginReq{}
+	req := UserLoginReq{}
 	ctx, err := reqresp.RequestUnmarshal(c, nil, &req)
 	if err != nil {
 		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, nil)
@@ -36,7 +38,7 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
-	resp := &userLoginResp{
+	resp := &UserLoginResp{
 		User: info,
 	}
 	reqresp.ResponseMarshal(c, errors.OK, resp)

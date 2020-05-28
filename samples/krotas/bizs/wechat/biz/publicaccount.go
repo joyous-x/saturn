@@ -2,8 +2,9 @@ package biz
 
 import (
 	"fmt"
-	tktb "github.com/joyous-x/saturn/model/tk/tb"
-	"github.com/joyous-x/saturn/model/wechat/pubacc/message"
+
+	tktb "github.com/joyous-x/saturn/foos/tk/tb"
+	"github.com/joyous-x/saturn/foos/wechat/pubacc/message"
 )
 
 func MyMsgHandler(v *message.MixMessage) (*message.Reply, error) {

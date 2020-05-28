@@ -14,8 +14,7 @@ import (
 )
 
 const (
-	env             = "local"
-	mysqlKeyMinipro = "minipro"
+	env = "local"
 )
 
 func initComponents() {

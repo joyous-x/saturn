@@ -2,8 +2,8 @@ package bizs
 
 import (
 	"github.com/joyous-x/saturn/dbs"
-	"github.com/joyous-x/saturn/model/ip2region"
-	"github.com/joyous-x/saturn/model/user"
+	"github.com/joyous-x/saturn/foos/ip2region"
+	"github.com/joyous-x/saturn/foos/user"
 )
 
 const (
