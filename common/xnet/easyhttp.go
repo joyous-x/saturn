@@ -3,7 +3,7 @@ package xnet
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/joyous-x/saturn/common/xlog"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net"
@@ -11,6 +11,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/joyous-x/saturn/common/xlog"
 )
 
 // HTTPOptions options for http request
@@ -50,36 +52,43 @@ func (s *EasyHTTP) SetOptions(options *HTTPOptions) {
 	}
 }
 
+// Get ...
+func (s *EasyHTTP) Get(urlPath string) ([]byte, error) {
+	return s.httpBase(urlPath, "GET", nil, "", s.options)
+}
+
 // PostWwwForm post x-www-form-urlencoded
-func (s *EasyHTTP) PostWwwForm(urls string, data map[string]string) ([]byte, error) {
+func (s *EasyHTTP) PostWwwForm(urlPath string, data map[string]string) ([]byte, error) {
 	vals := url.Values{}
 	for k, v := range data {
 		vals.Set(k, v)
 	}
 	body := strings.NewReader(vals.Encode())
-	return s.httpPostBase(urls, body, "application/x-www-form-urlencoded", s.options)
+	return s.httpBase(urlPath, "POST", body, "application/x-www-form-urlencoded", s.options)
 }
 
 // PostJSON post json
-func (s *EasyHTTP) PostJSON(url string, data interface{}) ([]byte, error) {
+func (s *EasyHTTP) PostJSON(urlPath string, data interface{}) ([]byte, error) {
 	vals, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
 	}
 	body := bytes.NewReader(vals)
-	return s.httpPostBase(url, body, "application/json", s.options)
+	return s.httpBase(urlPath, "POST", body, "application/json", s.options)
 }
 
-func (s *EasyHTTP) httpPostBase(url string, body io.Reader, contentType string, options HTTPOptions) ([]byte, error) {
+func (s *EasyHTTP) httpBase(urlPath, method string, body io.Reader, contentType string, options HTTPOptions) ([]byte, error) {
 	httpClient := &http.Client{
 		Timeout: options.ConnTimeout,
 	}
-	req, err := http.NewRequest("POST", url, body)
+	req, err := http.NewRequest(method, urlPath, body)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Add("Accept", "*/*")
-	req.Header.Set("Content-Type", contentType)
+	if len(contentType) > 0 {
+		req.Header.Set("Content-Type", contentType)
+	}
 	if len(options.UserAgent) > 0 {
 		req.Header.Set("User-Agent", options.UserAgent)
 	}
@@ -91,8 +100,11 @@ func (s *EasyHTTP) httpPostBase(url string, body io.Reader, contentType string, 
 		return nil, err
 	}
 	defer resp.Body.Close()
-	d, err := ioutil.ReadAll(resp.Body)
-	return d, err
+
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("http_status_code: %d, url=%s", resp.StatusCode, urlPath)
+	}
+	return ioutil.ReadAll(resp.Body)
 }
 
 // HTTProxy 转发http请求

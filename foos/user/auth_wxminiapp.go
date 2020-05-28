@@ -43,12 +43,13 @@ type wxAccessTokenResp struct {
 
 // LoginByWxMiniApp authorizate and register wechat user
 func LoginByWxMiniApp(ctx context.Context, appid, appname, appsecret, jsCode, inviter string) (uuid, token string, isNewUser bool, err error) {
-	openID, sessionKey, err := miniapp.WxMiniAppAuth(appid, appsecret, jsCode)
+	info, err := wechat.Oauth2WxMiniApp(appid, appsecret, jsCode)
 	if err != nil {
 		xlog.Error("wxMiniAppLogin appid=%v jscode=%v err=%v", appid, jsCode, err)
 		return
 	}
 
+	openID, sessionKey := info.Openid, info.SessionKey
 	wxUser, err := UserDaoInst().GetUserInfoByOpenID(ctx, appname, openID)
 	if err != nil {
 		xlog.Error("wxMiniAppLogin GetUserInfoByOpenID appid=%v openID=%v err=%v", appid, openID, err)

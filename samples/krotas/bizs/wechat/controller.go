@@ -8,6 +8,8 @@ import (
 	"krotas/common/errcode"
 	"net/http"
 
+	"krotas/common"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 	"github.com/joyous-x/saturn/common/errors"
@@ -139,15 +141,24 @@ func wxMiniappAccessToken(c *gin.Context) {
 		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, nil)
 		return
 	}
-	wxcfg, ok := config.GlobalInst().CfgProj().WxApps[req.Common.AppId]
+	pacfg, ok := config.GlobalInst().CfgProj().WxApps[req.Common.AppId]
 	if !ok {
 		xlog.Error("wxMiniappAccessToken invalid appid: %v", req.Common.AppId)
 		reqresp.ResponseMarshal(c, errors.ErrInvalidAppid, nil)
 		return
 	}
-	token, err := wechat.GetAccessTokenWithCache(dbs.RedisInst().Conn("default"), wxcfg.AppID, wxcfg.AppSecret)
-	if err != nil {
-		reqresp.ResponseMarshal(c, errors.NewError(errcode.ErrGetAccessToken.Code, err.Error()), nil)
+	wxcfg := &wechat.WxConfig{
+		AppID:          pacfg.AppID,
+		AppSecret:      pacfg.AppSecret,
+		EncodingAESKey: pacfg.EncodingAESKey,
+		PubAccToken:    pacfg.Token,
+	}
+	wxcfg.SetRedisFetcher(func() redis.Conn {
+		return dbs.RedisInst().Conn("default")
+	})
+	token := common.GetPubAccAccessToken(wxcfg)
+	if len(token) < 1 {
+		reqresp.ResponseMarshal(c, errcode.ErrGetAccessToken, nil)
 		return
 	}
 	resp := &wxMiniappAccessTokenResp{
