@@ -79,5 +79,8 @@ func doOauth2(url string) (*Oauth2Rst, error) {
 	if err := json.Unmarshal(body, resp); err != nil {
 		return resp, err
 	}
+	if resp.Errcode != 0 {
+		return resp, fmt.Errorf("oauth2 error: code=%v msg=%v", resp.Errcode, resp.Errmsg)
+	}
 	return resp, nil
 }

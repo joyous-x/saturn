@@ -72,17 +72,14 @@ func ResponseMarshal(c *gin.Context, err errors.BaseError, data IResponse) {
 }
 
 func responseMarshal(c *gin.Context, status int, message string, data IResponse, httpcode int) {
-	common := func() *RespCommonData {
-		if data == nil {
-			return &RespCommonData{}
-		}
-		iresp, ok := data.(IResponse)
-		if !ok {
-			panic("invalid response data: not IResponse")
-		}
-		return iresp.GetCommon()
-	}()
-
+	if data == nil {
+		data = &RespCommon{}
+	}
+	iresp, ok := data.(IResponse)
+	if !ok {
+		panic("invalid response data: not IResponse")
+	}
+	common := iresp.GetCommon()
 	common.Ret = status
 	common.Msg = message
 	common.RequestId = c.MustGet(RequestId).(string)
