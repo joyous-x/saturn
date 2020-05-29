@@ -6,20 +6,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/common/reqresp"
-	usercom "github.com/joyous-x/saturn/foos/user"
-	usermod "github.com/joyous-x/saturn/foos/user/model"
+	"github.com/joyous-x/saturn/foos/user"
 )
 
 // UserLoginReq login request
 type UserLoginReq struct {
 	reqresp.ReqCommon
-	Params *usercom.LoginParams `json:"params"`
+	Params *user.LoginRequest `json:"params"`
 }
 
 // UserLoginResp login request
 type UserLoginResp struct {
 	reqresp.RespCommon
-	User *usermod.UserInfo `json:"user"`
+	user.LoginResponse
 }
 
 // UserLogin user login via phone and third account
@@ -32,14 +31,14 @@ func UserLogin(c *gin.Context) {
 		return
 	}
 
-	info, err := usercom.Login(ctx, req.Params)
+	info, err := user.Login(ctx, req.Params)
 	if err != nil {
 		reqresp.ResponseMarshal(c, errors.NewError(errcode.ErrUserLogin.Code, err.Error()), nil)
 		return
 	}
 
 	resp := &UserLoginResp{
-		User: info,
+		LoginResponse: *info,
 	}
 	reqresp.ResponseMarshal(c, errors.OK, resp)
 	return

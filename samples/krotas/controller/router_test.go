@@ -9,7 +9,7 @@ import (
 
 	"github.com/joyous-x/saturn/common/reqresp"
 	"github.com/joyous-x/saturn/common/xnet"
-	usercom "github.com/joyous-x/saturn/foos/user"
+	"github.com/joyous-x/saturn/foos/user"
 )
 
 var (
@@ -19,16 +19,16 @@ var (
 
 func unmarshalResp(t *testing.T, respData []byte, resp interface{}) error {
 	if err := json.Unmarshal(respData, resp); err != nil {
-		t.Errorf("unmarshal error: %v, respData=%v", err, string(respData))
+		t.Fatalf("unmarshal error: %v, respData=%v", err, string(respData))
 	}
 
 	iResp, ok := resp.(reqresp.IResponse)
 	if !ok {
-		t.Errorf("error, invalid resp, not IResponse: %#v", resp)
+		t.Fatalf("error, invalid resp, not IResponse: %#v", resp)
 	}
 
 	if iResp.GetCommon().Ret != 0 {
-		t.Errorf("error, resp: %#v", resp)
+		t.Fatalf("error, resp: %#v", resp)
 	}
 
 	t.Logf("ok, resp: %#v", resp)
@@ -43,31 +43,31 @@ func Test_Ip2Region(t *testing.T) {
 	resp := &bizs.Ip2RegionResp{}
 	respData, err := client.PostJSON(fmt.Sprintf("http://%s/%s", localhost, "c/ip2region"), req)
 	if err != nil {
-		t.Errorf("error: %v", err)
+		t.Fatalf("error: %v", err)
 	}
 	if err := unmarshalResp(t, respData, resp); err != nil {
-		t.Errorf("error, unmarshalResp: %#v", err)
+		t.Fatalf("error, unmarshalResp: %#v", err)
 	}
 }
 
 func Test_Login(t *testing.T) {
 	req := &bizs.UserLoginReq{
-		Params: &usercom.LoginParams{
-			InviterUid:    "test_inviter_a",
+		Params: &user.LoginRequest{
+			InviterId:     "test_inviter_a",
 			InviteScene:   "test_scene",
 			InvitePayload: nil,
-			LoginType:     usercom.LoginTypeWxApp,
-			WX:            usercom.LoginWxParams{},
-			QQ:            usercom.LoginQQParams{},
-			Mobile:        usercom.LoginMobileParams{},
+			LoginType:     user.LoginByWxApp,
+			WX:            user.LoginWxParams{Code: "--------------------"},
+			QQ:            user.LoginQQParams{},
+			Mobile:        user.LoginMobileParams{},
 		},
 	}
 	resp := &bizs.UserLoginResp{}
 	respData, err := client.PostJSON(fmt.Sprintf("http://%s/%s", localhost, "c/login"), req)
 	if err != nil {
-		t.Errorf("error: %v", err)
+		t.Fatalf("error: %v", err)
 	}
 	if err := unmarshalResp(t, respData, resp); err != nil {
-		t.Errorf("error, unmarshalResp: %#v", err)
+		t.Fatalf("error, unmarshalResp: %#v", err)
 	}
 }

@@ -1,1 +1,0 @@
-curl -XPOST 'http://localhost:800/c/ip2region' -d '{"client_ip":"10.20.13.11"}'

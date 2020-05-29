@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/errors"
 	"github.com/joyous-x/saturn/common/utils"
@@ -71,12 +72,17 @@ func ResponseMarshal(c *gin.Context, err errors.BaseError, data IResponse) {
 }
 
 func responseMarshal(c *gin.Context, status int, message string, data IResponse, httpcode int) {
-	iresp, ok := data.(IResponse)
-	if !ok {
-		panic("invalid response data: not IResponse")
-	}
+	common := func() *RespCommonData {
+		if data == nil {
+			return &RespCommonData{}
+		}
+		iresp, ok := data.(IResponse)
+		if !ok {
+			panic("invalid response data: not IResponse")
+		}
+		return iresp.GetCommon()
+	}()
 
-	common := iresp.GetCommon()
 	common.Ret = status
 	common.Msg = message
 	common.RequestId = c.MustGet(RequestId).(string)

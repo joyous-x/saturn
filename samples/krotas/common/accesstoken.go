@@ -5,6 +5,7 @@ import (
 
 	"github.com/gomodule/redigo/redis"
 	"github.com/joyous-x/saturn/foos/wechat"
+	"github.com/joyous-x/saturn/foos/wechat/wxcom"
 )
 
 var keyAccessToken = func(key string) string {
@@ -29,7 +30,7 @@ func getPubAccAccessToken(conn redis.Conn, appID, appSecret string) (string, err
 	if len(token) > 0 {
 		return token, nil
 	}
-	resp, err := wechat.FetchAccessTokenPubAcc(appID, appSecret)
+	resp, err := wxcom.FetchAccessTokenPubAcc(appID, appSecret)
 	if err != nil {
 		return "", err
 	}

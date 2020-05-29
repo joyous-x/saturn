@@ -18,8 +18,8 @@ import (
 	"github.com/joyous-x/saturn/dbs"
 	"github.com/joyous-x/saturn/foos/user"
 	"github.com/joyous-x/saturn/foos/wechat"
-	"github.com/joyous-x/saturn/foos/wechat/miniapp"
 	"github.com/joyous-x/saturn/foos/wechat/pubacc"
+	"github.com/joyous-x/saturn/foos/wechat/wxcom"
 )
 
 type wxMiniappLoginReq struct {
@@ -76,20 +76,20 @@ func wxMiniappLogin(c *gin.Context) {
 		return
 	}
 
-	uuid, token, isNewUser, err := user.LoginByWxMiniApp(ctx, appInfo.AppID, appInfo.AppName, appInfo.AppSecret, req.JsCode, req.Inviter)
+	userInfo, err := user.LoginByWxMiniApp(ctx, appInfo.AppID, appInfo.AppName, appInfo.AppSecret, req.JsCode, req.Inviter)
 	if err != nil {
 		reqresp.ResponseMarshal(c, errors.NewError(errcode.ErrLoginByWxMiniApp.Code, err.Error()), &resp)
 		return
 	}
 
-	err = wxdao.PutWxToken(appInfo.AppID, uuid, token)
+	err = wxdao.PutWxToken(appInfo.AppID, userInfo.Uuid, userInfo.Token)
 	if err != nil {
-		xlog.Error("wxMiniappLogin PutWxToken appid=%v uuid=%v err=%v", appInfo.AppID, uuid, err)
+		xlog.Error("wxMiniappLogin PutWxToken appid=%v uuid=%v err=%v", appInfo.AppID, userInfo.Uuid, err)
 	}
 
-	resp.UUID = uuid
-	resp.Token = token
-	resp.IsNewUser = isNewUser
+	resp.UUID = userInfo.Uuid
+	resp.Token = userInfo.Token
+	resp.IsNewUser = userInfo.NewUser == 1
 	reqresp.ResponseMarshal(c, errors.OK, &resp)
 	return
 }
@@ -115,7 +115,7 @@ func wxMiniappUpdateUser(c *gin.Context) {
 		reqresp.ResponseMarshal(c, errors.NewError(errcode.ErrGetUserInfo.Code, err.Error()), nil)
 	}
 
-	infos, err := miniapp.DecryptWxUserInfo(req.EncryptedData, req.Iv, wxUserInfo.SessionKey)
+	infos, err := wxcom.DecryptWxUserInfo(req.EncryptedData, req.Iv, wxUserInfo.SessionKey)
 	if err != nil {
 		xlog.Error("WxUpdateUserInfo DecryptWxUserInfo (%s %s) encrypted_data=%v fail: %v", req.Common.AppId, req.Common.Uid, req.EncryptedData, err)
 		reqresp.ResponseMarshal(c, errors.NewError(errcode.ErrDecryptUserInfo.Code, err.Error()), nil)
