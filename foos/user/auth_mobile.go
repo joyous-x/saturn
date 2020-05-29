@@ -2,10 +2,8 @@ package user
 
 import (
 	"context"
-
-	"github.com/joyous-x/saturn/foos/user/model"
 )
 
-func loginByMobile(context.Context, *LoginParams) (*model.UserInfo, error) {
+func loginByMobile(ctx context.Context, appname string, req *LoginRequest) (*LoginResponse, error) {
 	return nil, nil
 }

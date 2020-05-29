@@ -1,4 +1,4 @@
-package wechat
+package wxcom
 
 import (
 	"encoding/json"
@@ -23,7 +23,7 @@ type AccessTokenInfo struct {
 type Oauth2Rst struct {
 	AccessTokenInfo
 	SessionKey   string `json:"session_key"`
-	Openid       string `json:"openid"`
+	OpenID       string `json:"openid"`
 	UnionID      string `json:"unionid"`
 	RefreshToken string `json:"refresh_token"`
 	Scope        string `json:"scope"`

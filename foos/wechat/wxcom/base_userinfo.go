@@ -1,4 +1,4 @@
-package wechat
+package wxcom
 
 import (
 	"encoding/json"

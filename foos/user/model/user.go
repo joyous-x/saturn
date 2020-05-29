@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"github.com/joyous-x/saturn/common/xlog"
-	"time"
 )
 
 type UserInfo struct {

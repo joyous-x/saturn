@@ -1,4 +1,4 @@
-package errors
+package errcode
 
 import (
 	"github.com/joyous-x/saturn/common/errors"
@@ -12,4 +12,5 @@ var (
 	OK              = errors.OK
 	ErrBadRequest   = errors.NewError(code(001), "bad request")
 	ErrAuthForbiden = errors.ErrAuthForbiden
+	ErrConfusedUuid = errors.NewError(code(002), "confused user info")
 )

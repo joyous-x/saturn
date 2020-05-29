@@ -2,18 +2,11 @@ package user
 
 import (
 	"context"
-	"fmt"
-	"hash/crc64"
-	"strconv"
-	"strings"
-	"time"
 
-	guuid "github.com/google/uuid"
-	comerrors "github.com/joyous-x/saturn/common/errors"
-	"github.com/joyous-x/saturn/common/utils"
 	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/foos/user/model"
 	"github.com/joyous-x/saturn/foos/wechat"
-	"github.com/joyous-x/saturn/foos/wechat/miniapp"
+	"github.com/joyous-x/saturn/foos/wechat/wxcom"
 )
 
 type userInfoUpdateReqData struct {
@@ -26,67 +19,33 @@ type loginRequestData struct {
 	Inviter string `json:"inviter"`
 }
 
-type loginResponseData struct {
-	UUID      string `json:"uuid"`
-	Token     string `json:"token"`
-	IsNewUser bool   `json:"is_new_user"`
-}
-
-type wxAccessTokenReq struct {
-	Appid string `json:"appid"`
-}
-
-type wxAccessTokenResp struct {
-	Appid string `json:"appid"`
-	Token string `json:"access_token"`
-}
-
 // LoginByWxMiniApp authorizate and register wechat user
-func LoginByWxMiniApp(ctx context.Context, appid, appname, appsecret, jsCode, inviter string) (uuid, token string, isNewUser bool, err error) {
-	info, err := wechat.Oauth2WxMiniApp(appid, appsecret, jsCode)
+func LoginByWxMiniApp(ctx context.Context, appid, appname, appsecret, jsCode, inviter string) (*LoginResponse, error) {
+	resp := &LoginResponse{}
+
+	oauth2Rst, err := wxcom.Oauth2WxMiniApp(appid, appsecret, jsCode)
 	if err != nil {
-		xlog.Error("wxMiniAppLogin appid=%v jscode=%v err=%v", appid, jsCode, err)
-		return
+		xlog.Error("LoginByWxMiniApp appid=%v jscode=%v err=%v", appid, jsCode, err)
+		return resp, err
 	}
 
-	openID, sessionKey := info.Openid, info.SessionKey
-	wxUser, err := UserDaoInst().GetUserInfoByOpenID(ctx, appname, openID)
+	userInfo := &model.UserInfo{
+		InviterID:  inviter,
+		OpenID:     oauth2Rst.OpenID,
+		SessionKey: oauth2Rst.SessionKey,
+	}
+	isNewUser, err := updateUserInfo(ctx, appname, userInfo, false)
 	if err != nil {
-		xlog.Error("wxMiniAppLogin GetUserInfoByOpenID appid=%v openID=%v err=%v", appid, openID, err)
-		return
+		return nil, err
 	}
 
-	newUUID := func(appname, openid string) string {
-		return utils.CalMD5(strings.Replace(guuid.New().String(), "-", "", -1) + appname + openid)
-	}
-	newToken := func(appname, uuid string) string {
-		suffix := strconv.FormatInt(time.Now().UnixNano(), 10) + guuid.New().String()
-		hash64 := crc64.Checksum([]byte(appname+uuid+suffix), crc64.MakeTable(crc64.ISO))
-		return fmt.Sprintf("%x", hash64)
-	}
-
-	if wxUser.Uuid == "" {
-		uuid = newUUID(appname, openID)
-	} else {
-		uuid = wxUser.Uuid
-		if wxUser.Status != 0 {
-			err = comerrors.ErrAuthForbiden.Err()
-			return
-		}
-	}
-	token = newToken(appname, uuid)
-
-	err = UserDaoInst().UpdateUserBaseInfo(ctx, appname, uuid, openID, sessionKey, 0, inviter)
-	if err != nil {
-		xlog.Error("wxMiniAppLogin UpdateUserBaseInfo appid=%v openid=%v err=%v", appid, openID, err)
-		return
-	}
-
-	return
+	resp.NewUser = isNewUser
+	resp.Uuid = userInfo.Uuid
+	return resp, nil
 }
 
-// updateByWxMiniApp 更新用户信息
-func updateByWxMiniApp(ctx context.Context, wxConfig *wechat.WxConfig, reqData *userInfoUpdateReqData) error {
+// UpdateUserInfoByWxMiniApp 更新用户信息
+func UpdateUserInfoByWxMiniApp(ctx context.Context, wxConfig *wechat.WxConfig, reqData *userInfoUpdateReqData) error {
 	appname := wxConfig.AppName
 	appname, uuid := "", ""
 
@@ -96,7 +55,7 @@ func updateByWxMiniApp(ctx context.Context, wxConfig *wechat.WxConfig, reqData *
 		return err
 	}
 
-	infos, err := miniapp.DecryptWxUserInfo(reqData.EncryptedData, reqData.Iv, wxUser.SessionKey)
+	infos, err := wxcom.DecryptWxUserInfo(reqData.EncryptedData, reqData.Iv, wxUser.SessionKey)
 	if err != nil {
 		xlog.Error("DecryptWxUserInfo (%s %s) encrypted_data=%v fail: %v", appname, uuid, reqData.EncryptedData, err)
 		return err

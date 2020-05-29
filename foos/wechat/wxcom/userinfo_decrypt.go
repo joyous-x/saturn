@@ -1,4 +1,4 @@
-package miniapp
+package wxcom
 
 import (
 	"crypto/aes"

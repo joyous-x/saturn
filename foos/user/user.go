@@ -3,8 +3,17 @@ package user
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"hash/crc64"
+	"strconv"
+	"strings"
+	"time"
 
-	"github.com/joyous-x/saturn/foos/user/errors"
+	guuid "github.com/google/uuid"
+	"github.com/joyous-x/saturn/common/errors"
+	"github.com/joyous-x/saturn/common/utils"
+	"github.com/joyous-x/saturn/common/xlog"
+	"github.com/joyous-x/saturn/foos/user/errcode"
 	"github.com/joyous-x/saturn/foos/user/model"
 )
 
@@ -21,9 +30,9 @@ const (
 	LoginByMobile = "mobile"
 )
 
-// LoginParams args
-type LoginParams struct {
-	InviterUID    string            `json:"inviter_uid"`
+// LoginRequest args
+type LoginRequest struct {
+	InviterId     string            `json:"inviter_uuid"`
 	InviteScene   string            `json:"invite_scene"`
 	InvitePayload json.RawMessage   `json:"invite_payload,omitempty"`
 	Platform      string            `json:"platform"`
@@ -50,28 +59,78 @@ type LoginMobileParams struct {
 	CodeType string `json:"type"`  // 验证码序列号
 }
 
+// LoginResponse ...
+type LoginResponse struct {
+	Uuid    string `json:"uuid"`
+	NewUser int    `json:"new_user"`
+	Token   string `json:"token"`
+}
+
 // Login login
-func Login(ctx context.Context, req *LoginParams) (*model.UserInfo, error) {
-	userInfo := &model.UserInfo{}
-	var err error
+func Login(ctx context.Context, req *LoginRequest) (resp *LoginResponse, err error) {
+	appid, appname, appsecret := "", "", ""
+
 	switch req.LoginType {
 	case LoginByWxQr:
 		// 1. appid + appsecret => access_token : (https://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1421140183)
 		// 2. https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=2 => sdk_ticket
 		// 3. sdk_ticket => (client)制作获取 qr 的签名 => (client)获取二维码
+		resp, err = loginByWxQr(ctx, appid, appname, appsecret, req)
 	case LoginByWxH5:
 		// code(from client) + appid + appsecret => access_token => get informations using api:/sns/xxx
+		fallthrough
 	case LoginByWxApp:
 		// code(from client) + appid + appsecret => access_token => get informations using api:/sns/xxx
-		userInfo, err = loginByWxApp(ctx, req)
+		resp, err = loginByWxApp(ctx, appid, appname, appsecret, req)
 	case LoginByMobile:
-		userInfo, err = loginByMobile(ctx, req)
+		resp, err = loginByMobile(ctx, appname, req)
 	default:
-		userInfo, err = nil, errors.ErrBadRequest
+		resp, err = nil, errors.ErrBadRequest
 	}
+	return
+}
+
+func newToken(appname, uuid string) string {
+	suffix := strconv.FormatInt(time.Now().UnixNano(), 10) + guuid.New().String()
+	hash64 := crc64.Checksum([]byte(appname+uuid+suffix), crc64.MakeTable(crc64.ISO))
+	return fmt.Sprintf("%x", hash64)
+}
+
+func updateUserInfo(ctx context.Context, appname string, infos *model.UserInfo, updateExtInfo bool) (int, error) {
+	wxUser, err := UserDaoInst().GetUserInfoByOpenID(ctx, appname, infos.OpenID)
 	if err != nil {
-		return userInfo, err
+		xlog.Error("UserDaoInst().GetUserInfoByOpenID appname=%v openID=%v err=%v", appname, infos.OpenID, err)
+		return 0, err
 	}
-	//> TODO:
-	return userInfo, err
+
+	newUUID := func(appname, openid string) string {
+		return utils.CalMD5(strings.Replace(guuid.New().String(), "-", "", -1) + appname + openid)
+	}
+
+	isNewUser := 0
+	if wxUser.Uuid == "" {
+		infos.Uuid = newUUID(appname, infos.OpenID)
+		isNewUser = 1
+	} else {
+		if wxUser.Status != 0 {
+			return isNewUser, errcode.ErrAuthForbiden
+		}
+		if infos.Uuid != wxUser.Uuid {
+			return isNewUser, errcode.ErrConfusedUuid
+		}
+	}
+
+	err = UserDaoInst().UpdateUserBaseInfo(ctx, appname, infos.Uuid, infos.OpenID, infos.SessionKey, 0, infos.InviterID)
+	if err != nil {
+		return isNewUser, err
+	}
+
+	if updateExtInfo {
+		err = UserDaoInst().UpdateUserExtInfo(ctx, appname, infos.Uuid, infos.UnionID, infos.NickName, infos.AvatarURL, infos.Gender, infos.Language, infos.City, infos.Province, infos.Country)
+		if err != nil {
+			return isNewUser, err
+		}
+	}
+
+	return isNewUser, nil
 }
