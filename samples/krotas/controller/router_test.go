@@ -71,3 +71,15 @@ func Test_Login(t *testing.T) {
 		t.Fatalf("error, unmarshalResp: %#v", err)
 	}
 }
+
+func Test_AliPay(t *testing.T) {
+	req := &bizs.AliPayReq{}
+	resp := &bizs.AliPayResp{}
+	respData, err := client.PostJSON(fmt.Sprintf("http://%s/%s", localhost, "c/pay/ali"), req)
+	if err != nil {
+		t.Fatalf("error: %v", err)
+	}
+	if err := unmarshalResp(t, respData, resp); err != nil {
+		t.Fatalf("error, unmarshalResp: %#v", err)
+	}
+}

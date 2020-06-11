@@ -56,6 +56,8 @@ func (g *GinServer) Init(conf *ServerConfig, middleware ...gin.HandlerFunc) erro
 	router := gin.New()
 	router.Use(g.middlewares...)
 	router.Use(middleware...)
+	g.ReadTimeoutMs = conf.ReadTimeoutMs
+	g.WriteTimeoutMs = conf.WriteTimeoutMs
 	g.engine = router
 	g.Name = name
 	g.Port = port
@@ -132,8 +134,10 @@ WAIT:
 
 func (g *GinServer) runServer() error {
 	httpSvr := &http.Server{
-		Addr:    fmt.Sprintf(":%v", g.Port),
-		Handler: g.engine,
+		Addr:         fmt.Sprintf(":%v", g.Port),
+		Handler:      g.engine,
+		ReadTimeout:  g.ReadTimeoutMs * time.Millisecond,
+		WriteTimeout: g.WriteTimeoutMs * time.Millisecond,
 	}
 	g.httpsvr = httpSvr
 	g.signStop = make(chan int, 1)
@@ -144,12 +148,12 @@ func (g *GinServer) runServer() error {
 	go func() {
 		if len(certFile) > 0 && len(keyFile) > 0 {
 			xlog.Debug("GinServer: ready to ListenAndServeTLS: %s(%s) certFile=%v keyFile=%v", name, addr, certFile, keyFile)
-			if err := httpSvr.ListenAndServeTLS(certFile, keyFile); err != http.ErrServerClosed {
+			if err := httpSvr.ListenAndServeTLS(certFile, keyFile); err != nil && err != http.ErrServerClosed {
 				xlog.Warn("GinServer:%s(%s) ListenAndServeTLS: %v", name, addr, err)
 			}
 		} else {
 			xlog.Debug("GinServer ready to ListenAndServe: %s(%s) certFile=%v keyFile=%v", name, addr, certFile, keyFile)
-			if err := httpSvr.ListenAndServe(); err != http.ErrServerClosed {
+			if err := httpSvr.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 				// Error starting or closing listener:
 				xlog.Warn("GinServer:%s(%s) ListenAndServe: %v", name, addr, err)
 			}

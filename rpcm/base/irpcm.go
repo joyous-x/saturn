@@ -1,13 +1,15 @@
 package base
 
 type ServiceConfig struct {
-	Protocal string `yaml:"protocal"` // Protocal, transport protocal
-	Encoding string `yaml:"encoding"` // Encoding, the serilization of datas
-	Name     string `yaml:"name"`
-	Port     int    `yaml:"port"`
-	CertFile string `yaml:"cert_file"`
-	KeyFile  string `yaml:"key_file"`
-	Debug    bool   `yaml:"debug"`
+	Protocal       string `yaml:"protocal"` // Protocal, transport protocal
+	Encoding       string `yaml:"encoding"` // Encoding, the serilization of datas
+	Name           string `yaml:"name"`
+	Port           int    `yaml:"port"`
+	CertFile       string `yaml:"cert_file"`
+	KeyFile        string `yaml:"key_file"`
+	Debug          bool   `yaml:"debug"`
+	ReadTimeoutMs  int    `yaml:"read_timeout_ms"`
+	WriteTimeoutMs int    `yaml:"write_timeout_ms"`
 }
 
 type ClientConfig struct {
