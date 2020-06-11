@@ -1,17 +1,18 @@
-package pay 
-
+package pay
 
 import (
-	"fmt"
 	"github.com/iGoogle-ink/gopay"
+	"github.com/joyous-x/saturn/common/xlog"
 )
 
+// Version ...
 func Version() string {
-	xlog.Debug(fmt.Println("GoPay(github.com/iGoogle-ink/gopay) Version: %v", gopay.Version)
+	xlog.Debug("GoPay(github.com/iGoogle-ink/gopay) Version: %v", gopay.Version)
 	return gopay.Version
 }
 
+// UnifiedOrder ...
 func UnifiedOrder() {
-	gopay.
-	client.UnifiedOrder()
+	// gopay.
+	// client.UnifiedOrder()
 }

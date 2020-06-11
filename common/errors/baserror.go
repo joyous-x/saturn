@@ -11,6 +11,13 @@ const (
 // 这句话表示 BaseError 类型（非指针）实现 error 接口
 var _ error = BaseError{}
 
+// IBaseError ...
+type IBaseError interface {
+	Code() int
+	Msg() string
+	Err() error
+}
+
 // BaseError ...
 type BaseError struct {
 	Code int

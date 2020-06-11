@@ -66,9 +66,18 @@ func requestUnmarshal(c *gin.Context, fnAuthUser FnAuthUser, data IRequest) (ctx
 	return
 }
 
-// ResponseMarshal 序列化应答数据
-func ResponseMarshal(c *gin.Context, err errors.BaseError, data IResponse) {
-	responseMarshal(c, err.Code, err.Msg, data, http.StatusOK)
+// ResponseMarshal 序列化应答数据 s.BaseError
+func ResponseMarshal(c *gin.Context, err error, data IResponse) {
+	var berr = errors.OK
+	if err != nil {
+		tmp, ok := err.(errors.BaseError)
+		if !ok {
+			berr = errors.NewError(errors.ErrServerError.Code, err.Error())
+		} else {
+			berr = tmp
+		}
+	}
+	responseMarshal(c, berr.Code, berr.Msg, data, http.StatusOK)
 }
 
 func responseMarshal(c *gin.Context, status int, message string, data IResponse, httpcode int) {

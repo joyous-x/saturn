@@ -15,4 +15,6 @@ var (
 	ErrNoFileFound        = comerrs.NewError(11100008, "no file found")
 	ErrTooBigFile         = comerrs.NewError(11100009, "too big file")
 	ErrInvalidUniqueId    = comerrs.NewError(11100010, "invalid unique id")
+
+	ErrSvParseURL = comerrs.NewError(11200010, "parse url error")
 )

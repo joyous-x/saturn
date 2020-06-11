@@ -136,8 +136,8 @@ func (g *GinServer) runServer() error {
 	httpSvr := &http.Server{
 		Addr:         fmt.Sprintf(":%v", g.Port),
 		Handler:      g.engine,
-		ReadTimeout:  g.ReadTimeoutMs * time.Millisecond,
-		WriteTimeout: g.WriteTimeoutMs * time.Millisecond,
+		ReadTimeout:  time.Duration(g.ReadTimeoutMs) * time.Millisecond,
+		WriteTimeout: time.Duration(g.WriteTimeoutMs) * time.Millisecond,
 	}
 	g.httpsvr = httpSvr
 	g.signStop = make(chan int, 1)

@@ -25,6 +25,8 @@ GO_OS ?= $(shell go env GOOS)
 GOFMT=gofmt
 GODEP=dep
 
+GOPROXY=https://goproxy.io
+
 BUILD_TIME=$(shell date '+%Y-%m-%dT%H:%M:%S')
 GIT_COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null)
 GO_LDFLAGS:= -X internal/common/version.BuildTime=$(BUILD_TIME)
@@ -47,7 +49,7 @@ build:
 	GOFILES=`find $(WORKSPACE) -name '*.go' -not -path '*vendor*'`; GOPATH=$(GOPATH) $(GOFMT) -l -w $$GOFILES;
 	if [ "$(ENV)" != "" ]; \
 	then \
-		CGO_ENABLED=0 GOOS=$(GO_OS) GOPATH=${GOPATH} $(GO) mod tidy; \
+		CGO_ENABLED=0 GOPROXY=$(GOPROXY) GOOS=$(GO_OS) GOPATH=${GOPATH} $(GO) mod tidy; \
 		CGO_ENABLED=0 GOOS=$(GO_OS) GOPATH=${GOPATH} $(GO) build -tags netgo -ldflags '$(GO_LDFLAGS)' -o $(buildDir)/$(TARGET); \
 	fi
 	if [ ! -f "$(buildDir)/$(TARGET)" ]; \
@@ -114,6 +116,10 @@ endef
 
 gofmt:
 	$(call gofmt_files,$@) 
+
+dep:
+	GO111MODULE=on GOPROXY=https://goproxy.io go mod tidy
+	#GO111MODULE=on GOPROXY=https://goproxy.io go mod vendor
 
 .PHONY: all
 
