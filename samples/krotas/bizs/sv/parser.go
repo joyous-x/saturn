@@ -33,7 +33,7 @@ type ItemInfo struct {
 // URLParser ...
 func URLParser(c *gin.Context) {
 	req := &URLParserReq{}
-	ctx, err := reqresp.RequestUnmarshal(c, nil, req)
+	ctx, err := reqresp.RequestUnmarshal(c, req)
 	if err != nil {
 		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, nil)
 		return

@@ -25,7 +25,7 @@ type UserLoginResp struct {
 // such as wechat, qq, and so on
 func UserLogin(c *gin.Context) {
 	req := UserLoginReq{}
-	ctx, err := reqresp.RequestUnmarshal(c, nil, &req)
+	ctx, err := reqresp.RequestUnmarshal(c, &req)
 	if err != nil {
 		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, nil)
 		return
@@ -36,6 +36,7 @@ func UserLogin(c *gin.Context) {
 		reqresp.ResponseMarshal(c, errors.NewError(errcode.ErrUserLogin.Code, err.Error()), nil)
 		return
 	}
+	user.SessHelperInst().UpdateToken(req.Common.AppID, info.Uuid, info.Token, 3600)
 
 	resp := &UserLoginResp{
 		LoginResponse: *info,

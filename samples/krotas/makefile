@@ -96,7 +96,7 @@ rsc:
 	fi
 	@echo "===> $@ : complete"
 
-web_path=$(abspath $(WORKSPACE)/env/web)
+web_path=$(abspath $(WORKSPACE)/web)
 web:
 	@echo "===> $@ : ready : web_path=$(web_path)"
 	if [ ! -d "$(web_path)" ]; then \

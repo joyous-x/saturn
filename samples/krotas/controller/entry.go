@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"krotas/bizs/wechat"
 	"net/http"
 	"path/filepath"
 
@@ -26,9 +25,7 @@ func (ctr *Controller) HTTPRouter(ginbox *gins.GinBox) error {
 	ginbox.Handle("inner", "POST", "/v1/version", ctr.version)
 
 	ctr.httpRouterStatic(ginbox.Server().Engine())
-
-	wechat.InitRouter("/wx", ginbox.Server().Engine())
-	initRouter("/c", ginbox.Server().Engine())
+	initRouter("/api", ginbox.Server().Engine())
 
 	return nil
 }

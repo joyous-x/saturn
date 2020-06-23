@@ -2,8 +2,9 @@ package reqresp
 
 type ReqCommonData struct {
 	Uid       string `json:"uid,omitempty"`
-	AppId     string `json:"appid,omitempty"`
-	RequestId string `json:"request_id,omitempty"`
+	AppID     string `json:"appid,omitempty"`
+	SessToken string `json:"session_token"`
+	RequestID string `json:"request_id,omitempty"`
 	DeviceID  string `json:"device_id,omitempty"`
 	Timestamp int64  `json:"timestamp"`
 	EchoToken string `json:"echo_token"`
@@ -12,7 +13,7 @@ type ReqCommonData struct {
 type RespCommonData struct {
 	Ret       int    `json:"ret"`
 	Msg       string `json:"msg"`
-	RequestId string `json:"request_id,omitempty"`
+	RequestID string `json:"request_id,omitempty"`
 	Timestamp int64  `json:"timestamp"`
 	RetryMS   int32  `json:"retry_ms"`
 	EchoToken string `json:"echo_token"`

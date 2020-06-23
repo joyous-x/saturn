@@ -49,7 +49,7 @@ func Ip2Region(c *gin.Context) {
 	req := Ip2RegionReq{}
 	resp := Ip2RegionResp{}
 
-	_, err := reqresp.RequestUnmarshal(c, nil, &req)
+	_, err := reqresp.RequestUnmarshal(c, &req)
 	if err != nil {
 		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, &resp)
 		return
@@ -57,11 +57,11 @@ func Ip2Region(c *gin.Context) {
 
 	if !req.Debug {
 		appSecret := ""
-		if _, ok := prodMap[req.Common.AppId]; !ok {
+		if _, ok := prodMap[req.Common.AppID]; !ok {
 			reqresp.ResponseMarshal(c, errors.ErrInvalidAppid, &resp)
 			return
 		} else {
-			appSecret = prodMap[req.Common.AppId]
+			appSecret = prodMap[req.Common.AppID]
 		}
 
 		signature := c.GetHeader("Authorization")
@@ -70,7 +70,7 @@ func Ip2Region(c *gin.Context) {
 			return
 		}
 
-		if ok, _ := checkAuth(req.Common.AppId, appSecret, signature, &req); !ok {
+		if ok, _ := checkAuth(req.Common.AppID, appSecret, signature, &req); !ok {
 			reqresp.ResponseMarshal(c, errors.ErrAuthForbiden, &resp)
 			return
 		}

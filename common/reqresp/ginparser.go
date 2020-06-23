@@ -2,9 +2,6 @@ package reqresp
 
 import (
 	"context"
-	"crypto/hmac"
-	"crypto/sha1"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 
@@ -19,51 +16,42 @@ import (
 	// "github.com/mitchellh/mapstructure"
 )
 
-const (
-	defaultToken = "ffffffffffffffffffffff"
-)
-
-// FnAuthUser 认证用户信息, 认证通过时返回session token的函数定义
-type FnAuthUser func(appid, uid, authorization string, dataBody []byte) (string, error)
-
 // RequestUnmarshal 解析入参
-func RequestUnmarshal(c *gin.Context, fn FnAuthUser, data IRequest) (ctx context.Context, err error) {
-	return requestUnmarshal(c, fn, data)
+func RequestUnmarshal(c *gin.Context, data IRequest) (context.Context, error) {
+	return requestUnmarshal(c, data)
 }
 
-func requestUnmarshal(c *gin.Context, fnAuthUser FnAuthUser, data IRequest) (ctx context.Context, err error) {
-	requestRawPacket, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		return
+func requestUnmarshal(c *gin.Context, data IRequest) (context.Context, error) {
+	ctx := context.Background()
+
+	reqRawPacket := CtxGetRaw(c, CtxKeyRequestData)
+	if nil == reqRawPacket {
+		reqRawPacket, err := ioutil.ReadAll(c.Request.Body)
+		if err != nil {
+			return ctx, err
+		}
+		CtxSetRaw(c, CtxKeyRequestData, reqRawPacket)
 	}
 
-	err = json.Unmarshal(requestRawPacket, &data)
+	err := json.Unmarshal(reqRawPacket, &data)
 	if err != nil {
-		xlog.Error("Unmarshal error raw=%v %v\n", string(requestRawPacket), err)
-		return
+		xlog.Error("Unmarshal error raw=%v %v\n", string(reqRawPacket), err)
+		return ctx, err
 	}
 
 	appid, uid, sessToken := "", "", ""
 	if ireq, ok := data.(IRequest); ok {
 		ireqCom := ireq.GetCommon()
-		appid, uid = ireqCom.AppId, ireqCom.Uid
-		c.Set(DeviceID, ireqCom.DeviceID)
-		c.Set(EchoToken, ireqCom.EchoToken)
-		c.Set(AppId, appid)
-		c.Set(Uuid, uid)
-		c.Set(RequestId, fmt.Sprintf("%x-%x", time.Now().Unix(), utils.NewSafeRand(time.Now().Unix()).Int31()))
+		appid, uid = ireqCom.AppID, ireqCom.Uid
+		c.Set(CtxKeyDeviceID, ireqCom.DeviceID)
+		c.Set(CtxKeyEchoToken, ireqCom.EchoToken)
+		c.Set(CtxKeyAppID, appid)
+		c.Set(CtxKeyUuid, uid)
+		c.Set(CtxKeyRequestID, fmt.Sprintf("%x-%x", time.Now().Unix(), utils.NewSafeRand(time.Now().Unix()).Int31()))
+		c.Set(CtxKeySessionToken, sessToken)
 		ctx = MakeCtx(c)
 	}
-
-	if nil != fnAuthUser {
-		sessToken, err = fnAuthUser(appid, uid, c.GetHeader("Authorization"), requestRawPacket)
-		if err != nil {
-			return
-		}
-	}
-
-	c.Set(SessionToken, sessToken)
-	return
+	return ctx, err
 }
 
 // ResponseMarshal 序列化应答数据 s.BaseError
@@ -91,43 +79,19 @@ func responseMarshal(c *gin.Context, status int, message string, data IResponse,
 	common := iresp.GetCommon()
 	common.Ret = status
 	common.Msg = message
-	common.RequestId = c.MustGet(RequestId).(string)
-	common.EchoToken = c.MustGet(EchoToken).(string)
+	common.RequestID = c.MustGet(CtxKeyRequestID).(string)
+	common.EchoToken = c.MustGet(CtxKeyEchoToken).(string)
 	common.RetryMS = 1000
 	common.Timestamp = time.Now().Unix()
 
 	c.Set("response_time", common.Timestamp)
 	c.Set("ret", common.Ret)
 	c.Set("msg", common.Msg)
-
-	token, exists := c.Get(SessionToken)
 	responseBody, _ := json.Marshal(data)
-	if exists {
-		signature := authSignContent(token.(string), responseBody)
+	if token, exist := c.Get(CtxKeySessionToken); exist {
+		signature := utils.MakeHMac(token.(string), responseBody)
 		c.Writer.Header().Set("Authorization", signature)
 	}
 	c.Data(httpcode, "application/json", responseBody)
 	return
-}
-
-////////////////////////////////////
-
-func authSignContent(token string, body []byte) (signature string) {
-	mac := hmac.New(sha1.New, []byte(token))
-	mac.Write(body)
-	signature = hex.EncodeToString(mac.Sum(nil))
-	return
-}
-
-func authUserSample(appid, uid, authorization string, dataBody []byte) (string, error) {
-	// get user token
-	token := ""
-
-	serverSign := authSignContent(token, dataBody)
-	if serverSign != authorization {
-		xlog.Error("signature client:%s, server:%s, token:%s, body:%s", authorization, serverSign, token, string(dataBody))
-		return "", fmt.Errorf("Authorization check fail")
-	}
-
-	return token, nil
 }
