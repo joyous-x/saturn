@@ -2,13 +2,13 @@ package wechat
 
 import (
 	"fmt"
+	"krotas/bizs/common/config"
+	"krotas/bizs/common/errcode"
 	"krotas/bizs/wechat/biz"
 	wxdao "krotas/bizs/wechat/dao"
-	"krotas/common/config"
-	"krotas/common/errcode"
 	"net/http"
 
-	"krotas/common"
+	"krotas/bizs/common"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
@@ -69,7 +69,7 @@ func wxMiniappLogin(c *gin.Context) {
 		return
 	}
 
-	appInfo, ok := config.GlobalInst().CfgProj().WxApps[req.Common.AppID]
+	appInfo, ok := config.GlobalInst().GetComConfig().WxApps[req.Common.AppID]
 	if !ok {
 		xlog.Error("wxMiniappLogin invalid appname: %v", appInfo.AppName)
 		reqresp.ResponseMarshal(c, errors.ErrInvalidAppid, &resp)
@@ -102,7 +102,7 @@ func wxMiniappUpdateUser(c *gin.Context) {
 		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, nil)
 		return
 	}
-	_, exist := config.GlobalInst().CfgProj().WxApps[req.Common.AppID]
+	_, exist := config.GlobalInst().GetComConfig().WxApps[req.Common.AppID]
 	if !exist {
 		err = fmt.Errorf("invalid appid: %v", req.Common.AppID)
 		reqresp.ResponseMarshal(c, errors.ErrInvalidAppid, nil)
@@ -141,7 +141,7 @@ func wxMiniappAccessToken(c *gin.Context) {
 		reqresp.ResponseMarshal(c, errors.ErrUnmarshalReq, nil)
 		return
 	}
-	pacfg, ok := config.GlobalInst().CfgProj().WxApps[req.Common.AppID]
+	pacfg, ok := config.GlobalInst().GetComConfig().WxApps[req.Common.AppID]
 	if !ok {
 		xlog.Error("wxMiniappAccessToken invalid appid: %v", req.Common.AppID)
 		reqresp.ResponseMarshal(c, errors.ErrInvalidAppid, nil)
@@ -171,7 +171,7 @@ func wxMiniappAccessToken(c *gin.Context) {
 
 // wxPublicAccountEventMessage response for public_account's EventMessage
 func wxPublicAccountEventMessage(c *gin.Context) {
-	pacfg, ok := config.GlobalInst().CfgProj().WxApps["pubacc"]
+	pacfg, ok := config.GlobalInst().GetComConfig().WxApps["pubacc"]
 	if !ok {
 		c.String(http.StatusOK, fmt.Sprintf("invalid pubacc"))
 		return

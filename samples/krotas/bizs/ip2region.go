@@ -1,7 +1,7 @@
 package bizs
 
 import (
-	"krotas/common/errcode"
+	"krotas/bizs/common/errcode"
 	"net/url"
 
 	"github.com/gin-gonic/gin"

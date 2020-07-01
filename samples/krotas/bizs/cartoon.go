@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"krotas/common/errcode"
+	"krotas/bizs/common/errcode"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
