@@ -38,7 +38,7 @@ func InitGlobalInst(args ...string) *MgrCenter {
 		}()
 
 		configMgr := &MgrCenter{}
-		if err := configMgr.AddConfObjectItem(CfgKeyCommon, makeConfigFilePath(configPath, "proj.yaml"), &ComConfig{}); err != nil {
+		if err := configMgr.AddConfObjectItem(CfgKeyCommon, makeConfigFilePath(configPath, "config.yaml"), &ComConfig{}); err != nil {
 			xlog.Error("configmgr AddConfObjectItem err:%v", err)
 			return
 		}

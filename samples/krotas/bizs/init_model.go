@@ -16,11 +16,19 @@ const (
 	mysqlKeyMinipro = "minipro"
 )
 
+// InitModels ...
 func InitModels() error {
-	if nil == dbs.RedisInst(config.GlobalInst().GetComConfig().Redis...) {
+	if nil == dbs.RedisInst(config.GlobalInst().ComConfig().Redis...) {
 		return fmt.Errorf("invalid redis instance")
 	}
-	if nil == dbs.MysqlInst(config.GlobalInst().GetComConfig().Mysql...) {
+
+	if rst, err := dbs.RedisInst().Ping(redisDefault); err != nil {
+		xlog.Error("redis ping error: %v", err)
+	} else {
+		xlog.Debug("redis ping ok: rst=%v", rst)
+	}
+
+	if nil == dbs.MysqlInst(config.GlobalInst().ComConfig().Mysql...) {
 		return fmt.Errorf("invalid mysql instance")
 	}
 
@@ -28,12 +36,6 @@ func InitModels() error {
 		xlog.Error("mysql db:%s error: %v", mysqlKeyDefault, err)
 	} else {
 		xlog.Debug("mysql db:%s ping ok", mysqlKeyDefault)
-	}
-
-	if rst, err := dbs.RedisInst().Ping(redisDefault); err != nil {
-		xlog.Error("redis ping error: %v", err)
-	} else {
-		xlog.Debug("redis ping ok: rst=%v", rst)
 	}
 
 	xlog.Info("===> Models(%v) init ok", os.Args[0])

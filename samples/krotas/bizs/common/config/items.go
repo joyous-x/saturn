@@ -30,7 +30,7 @@ type WxMiniAppInfo struct {
 }
 
 // GetComConfig ...
-func (m *MgrCenter) GetComConfig() *ComConfig {
+func (m *MgrCenter) ComConfig() *ComConfig {
 	v, ok := m.Configs[CfgKeyCommon]
 	if !ok {
 		return &ComConfig{}

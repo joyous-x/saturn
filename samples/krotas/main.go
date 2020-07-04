@@ -30,7 +30,7 @@ func main() {
 
 	// make ginbox
 	ginbox := gins.DefaultBox()
-	if err := ginbox.Init(cfgMgr.GetComConfig().ServerConfs); err != nil {
+	if err := ginbox.Init(cfgMgr.ComConfig().ServerConfs); err != nil {
 		panic(fmt.Errorf("ginbox init error: %s", err))
 	} else {
 		xlog.Debug(" ===> ginbox init success ")
