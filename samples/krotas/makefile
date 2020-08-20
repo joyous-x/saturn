@@ -81,8 +81,8 @@ config:
 	cp -rf $(WORKSPACE)/env/Dockerfile $(buildDir)/Dockerfile;
 	cp -rf $(WORKSPACE)/env/docker-compose.biz.yaml $(buildDir)/docker-compose.biz.yaml;
 	cp -rf $(WORKSPACE)/env/docker-compose.env.yaml $(buildDir)/docker-compose.env.yaml;
-	sed -i "s/$(domainKey)/$(domainVal)/g" $(buildDir)/nginx.conf;
-	sed -i "s/$(domainKey)/$(domainVal)/g" $(buildDir)/docker-compose.env.yaml;
+	sed -i "" "s/$(domainKey)/$(domainVal)/g" $(buildDir)/nginx.conf;
+	sed -i "" "s/$(domainKey)/$(domainVal)/g" $(buildDir)/docker-compose.env.yaml;
 	@echo "===> $@ : complete"
 
 rsc_path=$(abspath $(WORKSPACE)/env/rsc)
