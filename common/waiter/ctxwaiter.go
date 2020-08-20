@@ -62,10 +62,3 @@ func (c *CtxWaiter) newRoutine(fn func()) {
 	}
 	c.waitGroup.Done()
 }
-
-// NewCtxWaiter ...
-func NewCtxWaiter() IFlexWaiter {
-	waiter := &CtxWaiter{}
-	waiter.waitGroup = &sync.WaitGroup{}
-	return waiter
-}
