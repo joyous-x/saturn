@@ -1,8 +1,7 @@
 package dbs
 
-import ()
-
-type RedisExts struct {
+// RedisConfExts ...
+type RedisConfExts struct {
 	MaxIdle      int    `yaml:"maxIdle"`
 	MaxActive    int    `yaml:"maxActive"`
 	IdleTimeout  string `yaml:"idleTimeout"`
@@ -10,30 +9,28 @@ type RedisExts struct {
 	MaxConnLife  string `yaml:"maxConnLifetime"`
 	TestOnBorrow string `yaml:"testOnBorrow"`
 }
-type RedisDb struct {
-	Key string `yaml:"key"`
-	Db  int    `yaml:"db"`
-}
+
+// RedisConf ...
 type RedisConf struct {
-	Host   string    `yaml:"host"`
-	Passwd string    `yaml:"passwd"`
-	Dbs    []RedisDb `yaml:"dbs"`
-	Exts   RedisExts `yaml:"exts"`
+	Name   string        `yaml:"name"`
+	Host   string        `yaml:"host"`
+	Passwd string        `yaml:"passwd"`
+	Db     int           `yaml:"db"`
+	Exts   RedisConfExts `yaml:"exts"`
 }
 
-type MysqlExts struct {
+// MysqlConfExts ...
+type MysqlConfExts struct {
 	MaxIdle     int    `yaml:"maxIdle"`
 	MaxOpen     int    `yaml:"maxOpen"`
 	MaxPoolSize int    `yaml:"maxPoolSize"`
 	MaxConnLife string `yaml:"maxConnLifeTime"`
 }
+
+// MysqlConf ...
 type MysqlConf struct {
-	Key    string    `yaml:"key"`
-	Type   string    `yaml:"type"`
-	Host   string    `yaml:"host"`
-	User   string    `yaml:"user"`
-	Passwd string    `yaml:"passwd"`
-	DbName string    `yaml:"dbname"`
-	Debug  bool      `yaml:"debug"`
-	Exts   MysqlExts `yaml:"exts"`
+	Name string        `yaml:"name"`
+	Type string        `yaml:"type"`
+	Dsn  string        `yaml:"dsn"`
+	Exts MysqlConfExts `yaml:"exts"`
 }

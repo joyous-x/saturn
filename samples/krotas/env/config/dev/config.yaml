@@ -1,0 +1,48 @@
+httpserver:
+  - 
+    name: default
+    port: 8000
+    certFile: ""
+    keyFile: ""
+  - 
+    name: inner
+    port: 8001
+    certFile: ""
+    keyFile: ""
+
+xlog:
+  level: debug
+  path: ""
+
+db.mysql:
+    - name: default
+      type: mysql
+      dsn: "{mysql_user}:{mysql_passwd}@tcp(mysql:3306)/apps?parseTime=true&charset=utf8mb4,utf8&autocommit=true&loc=Asia%2FShanghai"
+      exts:
+        maxIdle: 10
+    - name: minipro
+      type: mysqlorm
+      dsn: "{mysql_user}:{mysql_passwd}@tcp(mysql:3306)/apps?parseTime=true&charset=utf8mb4,utf8&autocommit=true&loc=Asia%2FShanghai"
+      exts:
+        maxIdle: 10
+db.redis:
+    - name: default
+      host: redis:6379
+      passwd: {redis_passwd}
+      db: 0
+      exts:
+        maxIdle: 32
+        idleTimeout: 240s
+        connTimeout: 5s
+        maxConnLifetime: 0s
+        testOnBorrow: PING
+
+wxminiapp:
+  wowoo:
+    app_id: {wowoo_app_id}
+    app_secret: {wowoo_app_secret}
+  pubacc:
+    app_id: {pubacc_app_id}
+    app_secret: {pubacc_app_secret}
+    app_aeskey: {pubacc_app_aeskey}
+    token: {pubacc_app_token}

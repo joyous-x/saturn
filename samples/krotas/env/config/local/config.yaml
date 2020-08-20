@@ -1,0 +1,43 @@
+httpserver:
+  - 
+    name: default
+    port: 8000
+  - 
+    name: inner
+    port: 8001
+
+xlog:
+  level: debug
+  path: ""
+
+db.mysql:
+    - name: default
+      type: mysql
+      dsn: "joyousx:123.456@tcp(127.0.0.1:3306)/apps?parseTime=true&charset=utf8mb4,utf8&autocommit=true&loc=Asia%2FShanghai"
+      exts:
+        maxIdle: 10
+    - name: minipro
+      type: mysqlorm
+      dsn: "joyousx:123.456@tcp(127.0.0.1:3306)/apps?parseTime=true&charset=utf8mb4,utf8&autocommit=true&loc=Asia%2FShanghai"
+      exts:
+        maxIdle: 10
+db.redis:
+    - name: default
+      host: 127.0.0.1:6379
+      passwd: 123.456
+      db: 0
+      exts:
+        maxIdle: 32
+        idleTimeout: 240s
+        connTimeout: 5s
+        maxConnLifetime: 0s
+        testOnBorrow: PING
+
+wxminiapp:
+  miniapp:
+    app_id: "test-appid"
+    app_secret: ""
+  pubacc:
+    app_id: ""
+    app_secret: ""
+    token: ""

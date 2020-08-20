@@ -1,7 +1,7 @@
 package bizs
 
 import (
-	"krotas/common/errcode"
+	"krotas/bizs/common/errcode"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joyous-x/saturn/common/errors"

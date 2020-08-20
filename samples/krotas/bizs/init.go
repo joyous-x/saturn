@@ -6,12 +6,12 @@ import (
 	"github.com/joyous-x/saturn/foos/user"
 )
 
-const (
-	mysqlKeyMinipro = "minipro"
-)
-
 // Init initialize for all bizs
 func Init() {
+	if err := InitModels(); err != nil {
+		panic(err)
+	}
+
 	ip2region.Init("")
 
 	dbOrm, err := dbs.MysqlInst().DBOrm(mysqlKeyMinipro)

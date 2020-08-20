@@ -45,7 +45,7 @@ var gSessHelperOnce sync.Once
 func SessHelperInst() *SessHelper {
 	gSessHelperOnce.Do(func() {
 		gSessHelper = &SessHelper{}
-		gSessHelper.SetRedis(dbs.RedisInstEx().Client("default"))
+		gSessHelper.SetRedis(dbs.RedisInst().Client("default"))
 		xlog.Info("init => SessHelper : ok")
 	})
 	return gSessHelper

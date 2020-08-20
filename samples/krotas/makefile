@@ -18,7 +18,6 @@ ifneq ($(env), )
 ENV:=$(env)
 endif 
 
-
 GOPATH=$(abspath $(WORKSPACE)/..)
 GO=go
 GO_OS ?= $(shell go env GOOS)
@@ -73,8 +72,7 @@ config:
 		exit ;\
 	fi
 	if [ "$(ENV)" = "dev" ]; then \
-		$(WORKSPACE)/env/config/config_table.handler.sh -f $(buildDir)/config/dbs.yaml -p $(WORKSPACE)/env/config/config_table.$(ENV).yaml; \
-		$(WORKSPACE)/env/config/config_table.handler.sh -f $(buildDir)/config/proj.yaml -p $(WORKSPACE)/env/config/config_table.$(ENV).yaml; \
+		$(WORKSPACE)/env/config/config_table.handler.sh -f $(buildDir)/config/config.yaml -p $(WORKSPACE)/env/config/config_table.$(ENV).yaml; \
 	fi
 	cp -rf $(WORKSPACE)/env/crts $(buildDir)/crts;
 	cp -rf $(WORKSPACE)/env/nginx.conf $(buildDir)/nginx.conf;

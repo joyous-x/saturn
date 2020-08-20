@@ -8,24 +8,13 @@ import (
 	"github.com/joyous-x/saturn/common/xlog"
 
 	"krotas/bizs"
-	"krotas/common/config"
-	"krotas/common/model"
+	"krotas/bizs/common/config"
 	"krotas/controller"
 )
 
 const (
 	env = "local"
 )
-
-func initComponents() {
-	// initialize dbs
-	if err := model.InitModels(); err != nil {
-		panic(err)
-	}
-
-	// initialize components
-	bizs.Init()
-}
 
 func main() {
 	xlog.Debug("gins sample ===> start ")
@@ -39,16 +28,20 @@ func main() {
 		panic(fmt.Errorf("invalid config mgr"))
 	}
 
-	// initialize models and components
-	initComponents()
-
 	// make ginbox
 	ginbox := gins.DefaultBox()
-	if err := ginbox.Init(cfgMgr.CfgProj().HttpConfs); err == nil {
+	if err := ginbox.Init(cfgMgr.ComConfig().ServerConfs); err != nil {
+		panic(fmt.Errorf("ginbox init error: %s", err))
+	} else {
 		xlog.Debug(" ===> ginbox init success ")
-		ginbox.HTTPRouter(controller.New())
-		ginbox.Run()
 	}
+
+	// initialize models and components
+	bizs.Init()
+	// http router
+	ginbox.HTTPRouter(controller.New())
+	// running
+	ginbox.Run()
 
 	xlog.Debug("gins sample ===> end ")
 }
